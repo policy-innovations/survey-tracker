@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+    <head>
+        <title>{% block title %}A django default project{% endblock %}</title>
+        <link href="{{ STATIC_URL }}css/style.css" rel="text/css" />
+        {% block head %}{% endblock %}
+    </head>
+    <body>
+        <header>
+            <h1>{% block heading %}Page heading{% endblock %}</h1>
+            <nav></nav>
+        </header>
+        <section>
+            {% block content %}
+            Page content</br>
+            This is a default django project to ease start of building new ones.
+            {% endblock %}
+        </section>
+        <footer>
+        </footer>
+    </body>
+</html>
