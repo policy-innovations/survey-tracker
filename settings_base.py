@@ -123,6 +123,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'main',
     'south',
+    'mptt',
 )
 
 # A sample logging configuration. The only tangible logging
