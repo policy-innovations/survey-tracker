@@ -7,12 +7,12 @@ class RoleAdmin(MPTTModelAdmin):
                     'get_root',]
     MPTT_ADMIN_LEVEL_INDENT = 20
 
-class ErrorAdmin(MPTTModelAdmin):
+class ErrorTypeAdmin(MPTTModelAdmin):
     list_display = ['name', 'level', 'parent', 'get_descendant_count',
                     'get_root',]
     MPTT_ADMIN_LEVEL_INDENT = 20
 
 admin.site.register(Project)
-admin.site.register(Error, ErrorAdmin)
+admin.site.register(ErrorType, ErrorTypeAdmin)
 admin.site.register(Role, RoleAdmin)
 admin.site.register(UIDStatus)
