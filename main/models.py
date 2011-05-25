@@ -28,8 +28,13 @@ class Role(MPTTModel):
         return self.name.title()
 
 class UIDStatus(models.Model):
+    '''
+    This will be table storing the uids from excel exported sheets, linked
+    to the db pks.
+    '''
     uid = models.CharField(_('unique identifier'), max_length=30,
                            unique=True)
+    #The people who are responsible for this survey uid.
     responsibles = models.ManyToManyField(Role,
                                           verbose_name=_('responsible people'),
                                           )
@@ -43,9 +48,16 @@ class UIDStatus(models.Model):
         return self.uid
 
 class Error(MPTTModel):
+    '''
+    Possible errors which can occur in the survey. These are nested. An
+    error could have multiple suberrors to be choosen from.
+    '''
     name = models.CharField(_('name'), max_length=100)
     parent = TreeForeignKey('self', null=True, blank=True,
                                 related_name='suberrors')
+    details = models.TextField(_('details'), blank=True,
+                               help_text="enter extra details which  will\
+                               let the error make sense.") #Revise this
 
     class MPTTMeta:
         order_insertion_by = ['name']
@@ -53,6 +65,8 @@ class Error(MPTTModel):
 
     def __unicode__(self):
         return self.name.title()
+
+#For quick creation of fixtures. 
 
 def create_base_role_tree():
     project = Project.objects.get(pk=1)
