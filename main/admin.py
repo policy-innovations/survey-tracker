@@ -12,6 +12,10 @@ class RoleAdmin(MPTTModelAdmin):
                     'get_root',]
     MPTT_ADMIN_LEVEL_INDENT = 20
 
+    def queryset(self, *args, **kwargs):
+        qs = super(RoleAdmin, self).queryset(*args, **kwargs)
+        return qs.filter()
+
 class ErrorTypeAdmin(MPTTModelAdmin):
     list_display = ['name', 'level', 'parent', 'get_descendant_count',
                     'get_root',]

@@ -1,11 +1,14 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
+from django.contrib.auth.models import User
+
 from mptt.models import MPTTModel
 from mptt.fields import TreeForeignKey
 
 class Project(models.Model):
     name = models.CharField(_('name'), max_length=100)
+    users = models.ManyToManyField(User, blank=True)
 
     def __unicode__(self):
         return self.name.title()
@@ -19,6 +22,7 @@ class Role(MPTTModel):
     head = TreeForeignKey('self', null=True, blank=True,
                           related_name='subordinate')
     project = models.ForeignKey(Project)
+    user = models.ForeignKey(User)
 
     class MPTTMeta:
         order_insertion_by = ['name']
@@ -78,16 +82,35 @@ class UIDError(models.Model):
 
 #For quick creation of fixtures.
 
+def get_dummy_user(username):
+    user, new = User.objects.get_or_create(username=username)
+    if new:
+        user.set_password(username)
+        user.save()
+    return user
+
+def create_role(name, head=None):
+    user = get_dummy_user(name)
+    project, new = Project.objects.get_or_create(pk=1)
+    if new:
+        project.name = 'Base Project'
+        project.save()
+    project.users.add(user)
+    return Role.objects.create(name=name, project=project, user=user,
+                               head=head)
+
 def create_base_role_tree():
-    project = Project.objects.get(pk=1)
-    superhead = Role.objects.create(name='A', project=project)
-    s1 = Role.objects.create(name='B', head=superhead, project=project)
-    s2 = Role.objects.create(name='C', head=superhead, project=project)
-    ss1 = Role.objects.create(name='D', head=s1, project=project)
-    ss2 = Role.objects.create(name='E', head=s1, project=project)
-    ss3 = Role.objects.create(name='F', head=s1, project=project)
-    ss4 = Role.objects.create(name='G', head=s2, project=project)
-    sss1 = Role.objects.create(name='H', head=ss1, project=project)
-    sss2 = Role.objects.create(name='I', head=ss3, project=project)
-    sss3 = Role.objects.create(name='J', head=ss4, project=project)
-    sss4 = Role.objects.create(name='K', head=ss4, project=project)
+    superhead = create_role('A')
+
+    r1 = create_role('B', superhead)
+    r11 = create_role('D', r1)
+    r111 = create_role('H', r11)
+
+    r12 = create_role('E', r1)
+    r13 = create_role('F', r1)
+    r131 = create_role('I', r13)
+
+    r2 = create_role('C', superhead)
+    r21 = create_role('G', r2)
+    r211 = create_role('J', r21)
+    r212 = create_role('K', r21)

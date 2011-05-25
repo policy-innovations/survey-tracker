@@ -1,5 +1,21 @@
 [
   {
+    "pk": 2,
+    "model": "sites.site",
+    "fields": {
+      "domain": "example.com",
+      "name": "Deploy"
+    }
+  },
+  {
+    "pk": 1,
+    "model": "sites.site",
+    "fields": {
+      "domain": "localhost:8000",
+      "name": "Dev"
+    }
+  },
+  {
     "pk": 1,
     "model": "auth.user",
     "fields": {
@@ -19,18 +35,218 @@
   },
   {
     "pk": 2,
-    "model": "sites.site",
+    "model": "auth.user",
     "fields": {
-      "domain": "example.com",
-      "name": "Deploy"
+      "username": "test",
+      "first_name": "Test",
+      "last_name": "User",
+      "is_active": true,
+      "is_superuser": false,
+      "is_staff": true,
+      "last_login": "2011-05-25 22:33:22",
+      "groups": [],
+      "user_permissions": [],
+      "password": "sha1$c0e87$de5e50ed9c0b411c8e56f08ebaf6868255442738",
+      "email": "test@example.com",
+      "date_joined": "2011-05-25 22:33:22"
     }
   },
   {
-    "pk": 1,
-    "model": "sites.site",
+    "pk": 3,
+    "model": "auth.user",
     "fields": {
-      "domain": "localhost:8000",
-      "name": "Dev"
+      "username": "A",
+      "first_name": "",
+      "last_name": "",
+      "is_active": true,
+      "is_superuser": false,
+      "is_staff": false,
+      "last_login": "2011-05-25 23:48:11",
+      "groups": [],
+      "user_permissions": [],
+      "password": "sha1$8683c$f18ade37985bf29e4df93caabbcf1b279ec30a28",
+      "email": "",
+      "date_joined": "2011-05-25 23:48:11"
+    }
+  },
+  {
+    "pk": 4,
+    "model": "auth.user",
+    "fields": {
+      "username": "B",
+      "first_name": "",
+      "last_name": "",
+      "is_active": true,
+      "is_superuser": false,
+      "is_staff": false,
+      "last_login": "2011-05-25 23:48:11",
+      "groups": [],
+      "user_permissions": [],
+      "password": "sha1$6ddf3$9a39765a84b4498774e07e23ce21535be9c0c640",
+      "email": "",
+      "date_joined": "2011-05-25 23:48:11"
+    }
+  },
+  {
+    "pk": 5,
+    "model": "auth.user",
+    "fields": {
+      "username": "D",
+      "first_name": "",
+      "last_name": "",
+      "is_active": true,
+      "is_superuser": false,
+      "is_staff": false,
+      "last_login": "2011-05-25 23:48:11",
+      "groups": [],
+      "user_permissions": [],
+      "password": "sha1$cc91c$20bd1d9321b1427ed782cafca1e50155cff6ba1a",
+      "email": "",
+      "date_joined": "2011-05-25 23:48:11"
+    }
+  },
+  {
+    "pk": 6,
+    "model": "auth.user",
+    "fields": {
+      "username": "H",
+      "first_name": "",
+      "last_name": "",
+      "is_active": true,
+      "is_superuser": false,
+      "is_staff": false,
+      "last_login": "2011-05-25 23:48:11",
+      "groups": [],
+      "user_permissions": [],
+      "password": "sha1$08ae4$2043417b7eea289fe90a3ef5c0233168ef059f31",
+      "email": "",
+      "date_joined": "2011-05-25 23:48:11"
+    }
+  },
+  {
+    "pk": 7,
+    "model": "auth.user",
+    "fields": {
+      "username": "E",
+      "first_name": "",
+      "last_name": "",
+      "is_active": true,
+      "is_superuser": false,
+      "is_staff": false,
+      "last_login": "2011-05-25 23:48:12",
+      "groups": [],
+      "user_permissions": [],
+      "password": "sha1$9a83a$a1f0d917e67b73721938e5b56a77345ffede7564",
+      "email": "",
+      "date_joined": "2011-05-25 23:48:12"
+    }
+  },
+  {
+    "pk": 8,
+    "model": "auth.user",
+    "fields": {
+      "username": "F",
+      "first_name": "",
+      "last_name": "",
+      "is_active": true,
+      "is_superuser": false,
+      "is_staff": false,
+      "last_login": "2011-05-25 23:48:12",
+      "groups": [],
+      "user_permissions": [],
+      "password": "sha1$7f4e6$157952ad0afd6b073f7d4890dfd8f1cbf7ab4294",
+      "email": "",
+      "date_joined": "2011-05-25 23:48:12"
+    }
+  },
+  {
+    "pk": 9,
+    "model": "auth.user",
+    "fields": {
+      "username": "I",
+      "first_name": "",
+      "last_name": "",
+      "is_active": true,
+      "is_superuser": false,
+      "is_staff": false,
+      "last_login": "2011-05-25 23:48:12",
+      "groups": [],
+      "user_permissions": [],
+      "password": "sha1$d6212$0b01ff490fe29e95849f7df987e5670f8dc53269",
+      "email": "",
+      "date_joined": "2011-05-25 23:48:12"
+    }
+  },
+  {
+    "pk": 10,
+    "model": "auth.user",
+    "fields": {
+      "username": "C",
+      "first_name": "",
+      "last_name": "",
+      "is_active": true,
+      "is_superuser": false,
+      "is_staff": false,
+      "last_login": "2011-05-25 23:48:12",
+      "groups": [],
+      "user_permissions": [],
+      "password": "sha1$3d963$153c6ed10e5e8276a4c8bccf8e8bc3ecac6bb02b",
+      "email": "",
+      "date_joined": "2011-05-25 23:48:12"
+    }
+  },
+  {
+    "pk": 11,
+    "model": "auth.user",
+    "fields": {
+      "username": "G",
+      "first_name": "",
+      "last_name": "",
+      "is_active": true,
+      "is_superuser": false,
+      "is_staff": false,
+      "last_login": "2011-05-25 23:48:13",
+      "groups": [],
+      "user_permissions": [],
+      "password": "sha1$68835$39f4942f2ec7e8f5f18dba3eae02dfb089f06a8d",
+      "email": "",
+      "date_joined": "2011-05-25 23:48:13"
+    }
+  },
+  {
+    "pk": 12,
+    "model": "auth.user",
+    "fields": {
+      "username": "J",
+      "first_name": "",
+      "last_name": "",
+      "is_active": true,
+      "is_superuser": false,
+      "is_staff": false,
+      "last_login": "2011-05-25 23:48:13",
+      "groups": [],
+      "user_permissions": [],
+      "password": "sha1$6c5c6$cbc62293c2e9664915a2923089aa0246778312e8",
+      "email": "",
+      "date_joined": "2011-05-25 23:48:13"
+    }
+  },
+  {
+    "pk": 13,
+    "model": "auth.user",
+    "fields": {
+      "username": "K",
+      "first_name": "",
+      "last_name": "",
+      "is_active": true,
+      "is_superuser": false,
+      "is_staff": false,
+      "last_login": "2011-05-25 23:48:13",
+      "groups": [],
+      "user_permissions": [],
+      "password": "sha1$b8dba$e68aaecf63f0033f5091039d3a756f5b0d7321d8",
+      "email": "",
+      "date_joined": "2011-05-25 23:48:13"
     }
   }
 ]
