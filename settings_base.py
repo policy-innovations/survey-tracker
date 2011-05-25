@@ -131,6 +131,11 @@ INSTALLED_APPS = (
     'accounts',
 )
 
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'accounts.backend.ObjectPermBackend',
+)
+
 LOGIN_REDIRECT_URL = '/'
 
 MPTT_ADMIN_LEVEL_INDENT = 20
