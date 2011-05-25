@@ -1,6 +1,10 @@
 # Django settings for the project.
 import os
+import sys
+
 ROOT_PATH = os.path.dirname(__file__)
+
+
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
