@@ -3,7 +3,7 @@ from mptt.admin import MPTTModelAdmin
 from main.models import *
 
 class PersonAdmin(MPTTModelAdmin):
-    list_display = ['name', 'level', 'supervisor', 'get_descendant_count',
+    list_display = ['name', 'level', 'head', 'get_descendant_count',
                     'get_root',]
     MPTT_ADMIN_LEVEL_INDENT = 20
 

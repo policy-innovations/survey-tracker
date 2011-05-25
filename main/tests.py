@@ -9,17 +9,17 @@ from django.test import TestCase
 from main.models import Person
 
 def create_base_tree():
-    head = Person.objects.create(name='A')
-    s1 = Person.objects.create(name='B', supervisor=head)
-    s2 = Person.objects.create(name='C', supervisor=head)
-    ss1 = Person.objects.create(name='D', supervisor=s1)
-    ss2 = Person.objects.create(name='E', supervisor=s1)
-    ss3 = Person.objects.create(name='F', supervisor=s1)
-    ss4 = Person.objects.create(name='G', supervisor=s2)
-    sss1 = Person.objects.create(name='H', supervisor=ss1)
-    sss2 = Person.objects.create(name='I', supervisor=ss3)
-    sss3 = Person.objects.create(name='J', supervisor=ss4)
-    sss4 = Person.objects.create(name='K', supervisor=ss4)
+    superhead = Person.objects.create(name='A')
+    s1 = Person.objects.create(name='B', head=superhead)
+    s2 = Person.objects.create(name='C', head=superhead)
+    ss1 = Person.objects.create(name='D', head=s1)
+    ss2 = Person.objects.create(name='E', head=s1)
+    ss3 = Person.objects.create(name='F', head=s1)
+    ss4 = Person.objects.create(name='G', head=s2)
+    sss1 = Person.objects.create(name='H', head=ss1)
+    sss2 = Person.objects.create(name='I', head=ss3)
+    sss3 = Person.objects.create(name='J', head=ss4)
+    sss4 = Person.objects.create(name='K', head=ss4)
 
 class PersonTreeTest(TestCase):
     def setUp(self):
@@ -32,5 +32,6 @@ class PersonTreeTest(TestCase):
         head = Person.tree.root_nodes()
         subs = head[0].get_descendants()
         ##Find out the leaf nodes of the tree
-        #lowest_children = subs.objects.filter()
-        self.assertEqual(subs.count(), 10)
+        leaf_nodes = head[0].get_leafnodes()
+        print leaf_nodes
+        self.assertEqual(leaf_nodes.count(), 7)
