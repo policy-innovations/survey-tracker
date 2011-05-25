@@ -128,7 +128,10 @@ INSTALLED_APPS = (
     'main',
     'south',
     'mptt',
+    'accounts',
 )
+
+LOGIN_REDIRECT_URL = '/'
 
 MPTT_ADMIN_LEVEL_INDENT = 20
 

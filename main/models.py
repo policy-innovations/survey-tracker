@@ -59,7 +59,7 @@ class UIDStatus(models.Model):
     project = models.ForeignKey(Project)
 
     class Meta:
-        verbose_name =  _('UID  status')
+        verbose_name =  _('UID status')
         verbose_name_plural=_('UID statuses')
 
     def __unicode__(self):
@@ -91,4 +91,3 @@ def create_base_role_tree():
     sss2 = Role.objects.create(name='I', head=ss3, project=project)
     sss3 = Role.objects.create(name='J', head=ss4, project=project)
     sss4 = Role.objects.create(name='K', head=ss4, project=project)
-
