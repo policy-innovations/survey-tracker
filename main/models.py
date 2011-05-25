@@ -35,6 +35,10 @@ class UIDStatus(models.Model):
                                           )
     project = models.ForeignKey(Project)
 
+    class Meta:
+        verbose_name = 'UID status'
+        verbose_name_plural='UID statuses'
+
     def __unicode__(self):
         return self.uid
 
