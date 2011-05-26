@@ -28,7 +28,7 @@ class ErrorType(MPTTModel):
         parent_attr = 'parent'
 
     def __unicode__(self):
-        return 'Error type: %s' %(self.name.title())
+        return '%s' %(self.name.title())
 
 class UIDStatus(models.Model):
     '''
