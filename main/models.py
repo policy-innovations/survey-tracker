@@ -49,19 +49,6 @@ class UIDStatus(models.Model):
     def __unicode__(self):
         return self.uid
 
-    def all_responsible_people(self):
-        #All the people under a role are responsible
-        people = []
-        query = Q()
-        for role in self.responsibles.all():
-            #All the people under a role are responsible
-            q = Q(tree_id=role._mpttfield('tree_id'),
-                  lft__gte=role.lft,
-                  rght__lte=role.rght
-                  )
-            query |= q
-        return Role.objects.filter(query)
-
 class Role(MPTTModel):
     '''
     This will generate a hierarchy of people according to their
@@ -72,10 +59,11 @@ class Role(MPTTModel):
                           related_name='subordinate')
     project = models.ForeignKey(Project)
     user = models.ForeignKey(User)
-    uids = models.ManyToManyField(UIDStatus,
-                                  verbose_name=_('uid statuses'),
-                                  related_name=_('responsible people')
-                                  )
+    #Not using role assigned uids now
+    #uids = models.ManyToManyField(UIDStatus, blank=True
+                                  #verbose_name=_('uid statuses'),
+                                  #related_name=_('responsible people')
+                                  #)
 
     class MPTTMeta:
         order_insertion_by = ['name']
@@ -83,6 +71,9 @@ class Role(MPTTModel):
 
     def __unicode__(self):
         return self.name.title()
+
+    def uids(self):
+        return self.project.uidstatus_set().all()
 
 class UIDError(models.Model):
     '''
