@@ -15,7 +15,7 @@ class RoleInline(admin.TabularInline):
     extra = 2
 
 class RoleAdmin(MPTTModelAdmin):
-    list_display = ['name', 'user', 'level', 'head', 'get_root',]
+    list_display = ['name', 'user', 'level', 'get_root',]
     list_filter = ['user', 'project', 'level']
     MPTT_ADMIN_LEVEL_INDENT = 20
 
@@ -59,8 +59,11 @@ class ErrorTypeAdmin(MPTTModelAdmin):
                     'get_root',]
     MPTT_ADMIN_LEVEL_INDENT = 20
 
+class UIDStatusAdmin(admin.ModelAdmin):
+    list_display = ['uid', 'project', 'get_responsible_people']
+    filter_horizontal = ('responsibles',)
 
 admin.site.register(Project, ProjectAdmin)
 admin.site.register(ErrorType, ErrorTypeAdmin)
 admin.site.register(Role, RoleAdmin)
-admin.site.register(UIDStatus)
+admin.site.register(UIDStatus, UIDStatusAdmin)

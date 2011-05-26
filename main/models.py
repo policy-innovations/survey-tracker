@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 
 from django.contrib.auth.models import User
@@ -68,6 +69,19 @@ class UIDStatus(models.Model):
 
     def __unicode__(self):
         return self.uid
+
+    def all_responsible_people(self):
+        #All the people under a role are responsible
+        people = []
+        query = Q()
+        for role in self.responsibles.all():
+            #All the people under a role are responsible
+            q = Q(tree_id=role._mpttfield('tree_id'),
+                  lft__gte=role.lft,
+                  rght__lte=role.rght
+                  )
+            query |= q
+        return Role.objects.filter(query)
 
 class UIDError(models.Model):
     '''
