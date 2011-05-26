@@ -16,7 +16,7 @@ class ErrorTypeAdmin(MPTTModelAdmin):
     MPTT_ADMIN_LEVEL_INDENT = 20
 
 class UIDStatusAdmin(admin.ModelAdmin):
-    list_display = ['uid', 'project']
+    list_display = ['uid', 'project', 'role', 'responsible_people']
 
 class RoleInline(admin.TabularInline):
     model = Role
@@ -24,7 +24,7 @@ class RoleInline(admin.TabularInline):
     #filter_horizontal = ('uids',)
 
 class RoleAdmin(MPTTModelAdmin):
-    list_display = ['name', 'user', 'level', 'uids',]
+    list_display = ['name', 'user', 'level', 'uids']
     list_filter = ['user', 'project', 'level']
     MPTT_ADMIN_LEVEL_INDENT = 20
     #filter_horizontal = ('uids',)

@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.utils.translation import ugettext_lazy as _
 
 from django.contrib.auth.models import User
@@ -30,25 +30,6 @@ class ErrorType(MPTTModel):
     def __unicode__(self):
         return '%s' %(self.name.title())
 
-class UIDStatus(models.Model):
-    '''
-    This will be table storing the uids from excel exported sheets, linked
-    to the db pks.
-    '''
-    uid = models.CharField(_('unique identifier'), max_length=30,
-                           unique=True)
-    #The people who are responsible for this survey uid.
-    errors = models.ManyToManyField(ErrorType, null=True, blank=True,
-                                    through='UIDError', editable=False)
-    project = models.ForeignKey(Project)
-
-    class Meta:
-        verbose_name =  _('UID status')
-        verbose_name_plural=_('UID statuses')
-
-    def __unicode__(self):
-        return self.uid
-
 class Role(MPTTModel):
     '''
     This will generate a hierarchy of people according to their
@@ -73,8 +54,71 @@ class Role(MPTTModel):
         return self.name.title()
 
     def uids(self):
-        return self.project.uidstatus_set.all()
+        '''
+        This fetches the list of uids which are under a role's
+        responsiblity.
+        A role has uids assigned to it or if none is, it will be
+        responsible for all uids for which its head is and this
+        traverses up the hierarchy tree.
+
+        A Role will have uids from the closest ancestor (or itself) who
+        has a set.
+
+        Eg:
+        Let this be the tree:
+        Project: 300
+        A
+          B (200)
+            D
+              G
+              H
+            E
+              I
+          C
+            F
+              J
+              K
+
+        Now if only B has some uids asigned, then D, E will have same uid
+        sets as B and so would G, H, I.
+        The rest will be open for distribution and under everybody's
+        (except B subtree's) responsibility.
+        '''
+        project_uids = self.project.uidstatus_set.all()
+
+        ancestors = self.get_ancestors(include_self=True)
+        assigned_ancestors = ancestors.filter(uidstatuses__isnull=False)
+        if assigned_ancestors:
+            return assigned_ancestors.latest('level').uidstatuses.all()
+
+        return project_uids.filter(role__isnull=True)
+
     uids.short_description = _('UID Statuses')
+
+class UIDStatus(models.Model):
+    '''
+    This will be table storing the uids from excel exported sheets, linked
+    to the db pks.
+    '''
+    uid = models.CharField(_('unique identifier'), max_length=30,
+                           unique=True)
+    #The people who are responsible for this survey uid.
+    errors = models.ManyToManyField(ErrorType, null=True, blank=True,
+                                    through='UIDError', editable=False)
+    project = models.ForeignKey(Project)
+    role = models.ForeignKey(Role,
+                             verbose_name=_('main responsible person'),
+                             related_name='uidstatuses')
+
+    class Meta:
+        verbose_name =  _('UID status')
+        verbose_name_plural=_('UID statuses')
+
+    def __unicode__(self):
+        return self.uid
+
+    def responsible_people(self):
+        return self.role.get_descendants()
 
 class UIDError(models.Model):
     '''
