@@ -8,8 +8,13 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
         
-        # Adding field 'UIDStatus.responsible'
-        db.add_column('main_uidstatus', 'responsible', self.gf('django.db.models.fields.related.ForeignKey')(default=1, to=orm['main.Role']), keep_default=False)
+        # Adding M2M table for field uids on 'Role'
+        db.create_table('main_role_uids', (
+            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
+            ('role', models.ForeignKey(orm['main.role'], null=False)),
+            ('uidstatus', models.ForeignKey(orm['main.uidstatus'], null=False))
+        ))
+        db.create_unique('main_role_uids', ['role_id', 'uidstatus_id'])
 
         # Removing M2M table for field responsibles on 'UIDStatus'
         db.delete_table('main_uidstatus_responsibles')
@@ -17,8 +22,8 @@ class Migration(SchemaMigration):
 
     def backwards(self, orm):
         
-        # Deleting field 'UIDStatus.responsible'
-        db.delete_column('main_uidstatus', 'responsible_id')
+        # Removing M2M table for field uids on 'Role'
+        db.delete_table('main_role_uids')
 
         # Adding M2M table for field responsibles on 'UIDStatus'
         db.create_table('main_uidstatus_responsibles', (
@@ -92,6 +97,7 @@ class Migration(SchemaMigration):
             'project': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['main.Project']"}),
             'rght': ('django.db.models.fields.PositiveIntegerField', [], {'db_index': 'True'}),
             'tree_id': ('django.db.models.fields.PositiveIntegerField', [], {'db_index': 'True'}),
+            'uids': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "u'responsible people'", 'symmetrical': 'False', 'to': "orm['main.UIDStatus']"}),
             'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"})
         },
         'main.uiderror': {
@@ -106,7 +112,6 @@ class Migration(SchemaMigration):
             'errors': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'to': "orm['main.ErrorType']", 'null': 'True', 'through': "orm['main.UIDError']", 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'project': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['main.Project']"}),
-            'responsible': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['main.Role']"}),
             'uid': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '30'})
         }
     }

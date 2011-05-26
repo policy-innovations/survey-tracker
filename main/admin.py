@@ -10,15 +10,24 @@ from accounts.admin import ObjectPermissionInline, ObjectPermissionMixin
 class ProjectAdmin(ObjectPermissionMixin, admin.ModelAdmin):
     inlines = [ObjectPermissionInline]
 
+class ErrorTypeAdmin(MPTTModelAdmin):
+    list_display = ['name', 'level', 'parent', 'get_descendant_count',
+                    'get_root',]
+    MPTT_ADMIN_LEVEL_INDENT = 20
+
+class UIDStatusAdmin(admin.ModelAdmin):
+    list_display = ['uid', 'project', 'all_responsible_people']
+
 class RoleInline(admin.TabularInline):
     model = Role
     extra = 2
+    filter_horizontal = ('uids',)
 
 class RoleAdmin(MPTTModelAdmin):
-    list_display = ['name', 'user', 'level', 'head', 'get_root',]
+    list_display = ['name', 'user', 'level', 'get_root',]
     list_filter = ['user', 'project', 'level']
     MPTT_ADMIN_LEVEL_INDENT = 20
-
+    filter_horizontal = ('uids',)
     inlines = [RoleInline]
 
     def queryset(self, request, *args, **kwargs):
@@ -54,13 +63,7 @@ class RoleAdmin(MPTTModelAdmin):
             pass
         return form
 
-class ErrorTypeAdmin(MPTTModelAdmin):
-    list_display = ['name', 'level', 'parent', 'get_descendant_count',
-                    'get_root',]
-    MPTT_ADMIN_LEVEL_INDENT = 20
-
-
 admin.site.register(Project, ProjectAdmin)
 admin.site.register(ErrorType, ErrorTypeAdmin)
 admin.site.register(Role, RoleAdmin)
-admin.site.register(UIDStatus)
+admin.site.register(UIDStatus, UIDStatusAdmin)

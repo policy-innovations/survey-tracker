@@ -1,34 +1,15 @@
 from django.db import models
+from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 
 from django.contrib.auth.models import User
 
 from mptt.models import MPTTModel
-from mptt.models import MPTTOptions
 from mptt.fields import TreeForeignKey
-from mptt.managers import TreeManager
 
 class Project(models.Model):
     name = models.CharField(_('name'), max_length=100)
     users = models.ManyToManyField(User, blank=True)
-
-    def __unicode__(self):
-        return self.name.title()
-
-class Role(MPTTModel):
-    '''
-    This will generate a hierarchy of people according to their
-    posts.
-    '''
-    name = models.CharField(_('name'), max_length=100)
-    head = TreeForeignKey('self', null=True, blank=True,
-                          related_name='subordinate')
-    project = models.ForeignKey(Project)
-    user = models.ForeignKey(User)
-
-    class MPTTMeta:
-        order_insertion_by = ['name']
-        parent_attr = 'head'
 
     def __unicode__(self):
         return self.name.title()
@@ -44,7 +25,8 @@ class ErrorType(MPTTModel):
 
     class MPTTMeta:
         order_insertion_by = ['name']
-        parent_attr = 'parent' 
+        parent_attr = 'parent'
+
     def __unicode__(self):
         return 'Error type: %s' %(self.name.title())
 
@@ -58,9 +40,6 @@ class UIDStatus(models.Model):
     #The people who are responsible for this survey uid.
     errors = models.ManyToManyField(ErrorType, null=True, blank=True,
                                     through='UIDError')
-    responsible = models.ForeignKey(Role,
-                                    verbose_name=_('responsible person'),
-                                    )
     project = models.ForeignKey(Project)
 
     class Meta:
@@ -69,6 +48,41 @@ class UIDStatus(models.Model):
 
     def __unicode__(self):
         return self.uid
+
+    def all_responsible_people(self):
+        #All the people under a role are responsible
+        people = []
+        query = Q()
+        for role in self.responsibles.all():
+            #All the people under a role are responsible
+            q = Q(tree_id=role._mpttfield('tree_id'),
+                  lft__gte=role.lft,
+                  rght__lte=role.rght
+                  )
+            query |= q
+        return Role.objects.filter(query)
+
+class Role(MPTTModel):
+    '''
+    This will generate a hierarchy of people according to their
+    posts.
+    '''
+    name = models.CharField(_('name'), max_length=100)
+    head = TreeForeignKey('self', null=True, blank=True,
+                          related_name='subordinate')
+    project = models.ForeignKey(Project)
+    user = models.ForeignKey(User)
+    uids = models.ManyToManyField(UIDStatus,
+                                  verbose_name=_('uid statuses'),
+                                  related_name=_('responsible people')
+                                  )
+
+    class MPTTMeta:
+        order_insertion_by = ['name']
+        parent_attr = 'head'
+
+    def __unicode__(self):
+        return self.name.title()
 
 class UIDError(models.Model):
     '''
