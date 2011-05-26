@@ -57,9 +57,9 @@ class UIDStatus(models.Model):
     #The people who are responsible for this survey uid.
     errors = models.ManyToManyField(ErrorType, null=True, blank=True,
                                     through='UIDError')
-    responsibles = models.ManyToManyField(Role,
-                                          verbose_name=_('responsible people'),
-                                          )
+    responsible = models.ForeignKey(Role,
+                                    verbose_name=_('responsible person'),
+                                    )
     project = models.ForeignKey(Project)
 
     class Meta:
