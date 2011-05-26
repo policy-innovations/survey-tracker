@@ -1,0 +1,28 @@
+{% extends 'base.html'  %}
+
+{% block head %}
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+            var error_list;
+            $.getJSON('/get-error-types/',function(data) {
+                error_list = data;
+                //alert('Fetched ' + error_list.length + ' items!');
+                });
+            $("#id_errors").change(function (){
+                sel_error = parseInt($("#id_errors").val());
+                if(isNaN(sel_error) == false){
+                for(i = 0; i < error_list.length; i++ ){
+                    if (error_list[i].fields.parent == sel_error){
+                        alert(error_list[i]);
+                    }
+                    }
+                }
+            }).change();
+    });
+</script>
+{% endblock %}
+
+{% block content %}
+{{ form.as_p }}
+{% endblock %}
