@@ -21,7 +21,7 @@ class UIDStatusAdmin(admin.ModelAdmin):
 class RoleInline(admin.TabularInline):
     model = Role
     extra = 2
-    filter_horizontal = ('uids',)
+    #filter_horizontal = ('uids',)
 
 class RoleAdmin(MPTTModelAdmin):
     list_display = ['name', 'user', 'level', 'get_root',]
