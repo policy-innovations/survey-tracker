@@ -10,10 +10,16 @@ from accounts.admin import ObjectPermissionInline, ObjectPermissionMixin
 class ProjectAdmin(ObjectPermissionMixin, admin.ModelAdmin):
     inlines = [ObjectPermissionInline]
 
+class RoleInline(admin.TabularInline):
+    model = Role
+    extra = 2
+
 class RoleAdmin(MPTTModelAdmin):
     list_display = ['name', 'user', 'level', 'head', 'get_root',]
     list_filter = ['user', 'project', 'level']
     MPTT_ADMIN_LEVEL_INDENT = 20
+
+    inlines = [RoleInline]
 
     def queryset(self, request, *args, **kwargs):
         qs = super(RoleAdmin, self).queryset(request, *args, **kwargs)
@@ -33,6 +39,20 @@ class RoleAdmin(MPTTModelAdmin):
                 query |= q
 
             return qs.filter(query)
+
+    def get_readonly_fields(self, request, obj=None):
+        fields = list(super(RoleAdmin, self).get_readonly_fields(request,
+                                                                 obj))
+        if (not request.user.is_superuser) and request.user==obj.user:
+                fields += ['head', 'user', 'project']
+        return tuple(fields)
+
+    def get_form(self, request, obj=None):
+        form = super(RoleAdmin, self).get_form(request, obj)
+        if not request.user.is_superuser:
+            #Filter form querysets here
+            pass
+        return form
 
 class ErrorTypeAdmin(MPTTModelAdmin):
     list_display = ['name', 'level', 'parent', 'get_descendant_count',
