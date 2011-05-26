@@ -2,16 +2,19 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, render_to_response
 from django.template import RequestContext
 from django.core import serializers
+from django.forms.formsets import formset_factory
 import settings
-from main.forms import EntryForm
+from main.forms import *
 from main.models import *
 
 def home(request):
     return render(request, 'main/home.html',)
 
 def new_entry(request):
-    form = EntryForm()
-    return render(request, 'main/new_entry.html', {'form':form})
+    uid_status_form = UIDStatusForm()
+    uid_error_formset = formset_factory(UIDErrorForm)
+    return render(request, 'main/new_entry.html', {'uid_status_form':
+        uid_status_form, 'uid_error_formset':uid_error_formset})
 
 def get_error_types(request):
     mimetype = 'application/json'

@@ -39,7 +39,7 @@ class UIDStatus(models.Model):
                            unique=True)
     #The people who are responsible for this survey uid.
     errors = models.ManyToManyField(ErrorType, null=True, blank=True,
-                                    through='UIDError')
+                                    through='UIDError', editable=False)
     project = models.ForeignKey(Project)
 
     class Meta:
@@ -90,7 +90,7 @@ class UIDError(models.Model):
     It is where detail is to be defined
     '''
     etype = models.ForeignKey(ErrorType)
-    uid_status = models.ForeignKey(UIDStatus)
+    uid_status = models.ForeignKey(UIDStatus, editable=False)
     details = models.TextField(_('details'), blank=True,
                                help_text="enter extra details which  will\
                                let the error make sense.") #Revise this
