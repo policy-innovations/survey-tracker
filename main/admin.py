@@ -60,7 +60,7 @@ class ErrorTypeAdmin(MPTTModelAdmin):
     MPTT_ADMIN_LEVEL_INDENT = 20
 
 class UIDStatusAdmin(admin.ModelAdmin):
-    list_display = ['uid', 'project', 'get_responsible_people']
+    list_display = ['uid', 'project', 'all_responsible_people']
     filter_horizontal = ('responsibles',)
 
 admin.site.register(Project, ProjectAdmin)
