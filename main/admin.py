@@ -32,22 +32,25 @@ class RoleAdmin(MPTTModelAdmin):
 
     def queryset(self, request, *args, **kwargs):
         qs = super(RoleAdmin, self).queryset(request, *args, **kwargs)
-        if request.user.is_superuser:
-            return qs
-        else:
+        if not request.user.is_superuser:
             self_roles = qs.filter(user=request.user)
             query = Q()
-            for role in self_roles:
-                left = role.lft
-                right = role.rght
-                #Filter roles which are under the logged in user
-                q = Q(tree_id=role._mpttfield('tree_id'),
-                      lft__gte=left,
-                      rght__lte=right
-                      )
-                query |= q
+            if self_roles:
+                for role in self_roles:
+                    left = role.lft
+                    right = role.rght
+                    #Filter roles which are under the logged in user
+                    q = Q(tree_id=role._mpttfield('tree_id'),
+                          lft__gte=left,
+                          rght__lte=right
+                          )
+                    query |= q
+                    print query
+                qs = qs.filter(query)
+            else:
+                qs = self_roles
 
-            return qs.filter(query)
+        return qs
 
     def get_readonly_fields(self, request, obj=None):
         fields = list(super(RoleAdmin, self).get_readonly_fields(request,
