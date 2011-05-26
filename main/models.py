@@ -73,7 +73,8 @@ class Role(MPTTModel):
         return self.name.title()
 
     def uids(self):
-        return self.project.uidstatus_set().all()
+        return self.project.uidstatus_set.all()
+    uids.short_description = _('UID Statuses')
 
 class UIDError(models.Model):
     '''

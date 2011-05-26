@@ -24,7 +24,7 @@ class RoleInline(admin.TabularInline):
     #filter_horizontal = ('uids',)
 
 class RoleAdmin(MPTTModelAdmin):
-    list_display = ['name', 'user', 'level', 'get_root',]
+    list_display = ['name', 'user', 'level', 'uids',]
     list_filter = ['user', 'project', 'level']
     MPTT_ADMIN_LEVEL_INDENT = 20
     #filter_horizontal = ('uids',)
