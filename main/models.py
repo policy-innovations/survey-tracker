@@ -4,7 +4,9 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 
 from mptt.models import MPTTModel
+from mptt.models import MPTTOptions
 from mptt.fields import TreeForeignKey
+from mptt.managers import TreeManager
 
 class Project(models.Model):
     name = models.CharField(_('name'), max_length=100)
@@ -42,8 +44,7 @@ class ErrorType(MPTTModel):
 
     class MPTTMeta:
         order_insertion_by = ['name']
-        parent_attr = 'parent'
-
+        parent_attr = 'parent' 
     def __unicode__(self):
         return 'Error type: %s' %(self.name.title())
 
