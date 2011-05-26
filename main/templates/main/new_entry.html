@@ -1,7 +1,8 @@
 {% extends 'base.html'  %}
 
 {% block head %}
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js" type="text/javascript"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"
+    type="text/javascript"></script>
 <script type="text/javascript">
     $(document).ready(function(){
             var error_list;
@@ -10,15 +11,50 @@
                 //alert('Fetched ' + error_list.length + ' items!');
                 });
             $("#id_errors").change(function (){
+                $(".sub_errors").remove();
                 sel_error = parseInt($("#id_errors").val());
                 if(isNaN(sel_error) == false){
+                var output = "&nbsp;&nbsp;"
+                output += "<select class=\"sub_errors\" level=\"1\" id=\"id_sub_errors_1\">";
+                output += "<option value=\"\" selected=\"selected\">------------</option>";
                 for(i = 0; i < error_list.length; i++ ){
                     if (error_list[i].fields.parent == sel_error){
-                        alert(error_list[i]);
+                    output += "<option value=\"" + error_list[i].pk + "\">" + error_list[i].fields.name + "</option>";
                     }
                     }
+                output += "</select>&nbsp;&nbsp;";
+                $(output).insertAfter(this);
                 }
-            }).change();
+                });
+            $(".sub_errors").live('change', function (){
+                var sel_sub_error = parseInt($(this).val());
+                var temp = String(jQuery(this).get(0).id).split("_");
+                var level = String(jQuery(this).get(0).id).split("_")[3];
+                var child_count = 0;
+                if(isNaN(sel_sub_error) == false){
+                level = parseInt(level) + 1;
+                $(".sub_errors").each(function() {
+                    if(parseInt(String(jQuery(this).get(0).id).split("_")[3])>= level){
+                        $(this).remove();
+                    }
+                });
+                var output = "&nbsp;&nbsp;"
+                output += "<select class=\"sub_errors\" level=\"" + level + "\" id=\"id_sub_errors_" + level + "\">";
+                output += "<option value=\"\" selected=\"selected\">------------</option>";
+                for(i = 0; i < error_list.length; i++ ){
+                    if (error_list[i].fields.parent == sel_sub_error){
+                    child_count += 1;
+                    output += "<option value=\"" + error_list[i].pk + "\">" + error_list[i].fields.name + "</option>";
+                    }
+                    }
+                output += "</select>&nbsp;&nbsp;";
+                if (child_count == 0){
+                output = "<label for=\"id_error_response\">Response:</label> <input id=\"id_error_response\" type=\"text\" name=\"error_response\" maxlength=\"30\"/>";
+                }   
+                $(output).insertAfter(this);
+                }
+
+            });
     });
 </script>
 {% endblock %}
