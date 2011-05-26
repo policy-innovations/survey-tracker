@@ -16,5 +16,6 @@ def new_entry(request):
 def get_error_types(request):
     mimetype = 'application/json'
     json_serializer = serializers.get_serializer("json")()
-    data = json_serializer.serialize(ErrorType.objects.all(), ensure_ascii=False)
+    data = json_serializer.serialize(ErrorType.objects.all(),
+            ensure_ascii=False, fields=('name', 'id', 'parent', 'level'))
     return HttpResponse(data, mimetype)
