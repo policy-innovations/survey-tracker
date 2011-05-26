@@ -6,7 +6,10 @@ class UIDStatusForm(forms.ModelForm):
         model = UIDStatus
 
 class UIDErrorForm(forms.ModelForm):
-    etype = forms.ModelChoiceField(ErrorType.objects.all().filter(level=0),
-                        empty_label="----------" )
+    choices = [('','-----------'),]
+    for e in ErrorType.objects.all().filter(level=0):
+        choices.append((e.pk, e.name))
+    etype = forms.ChoiceField(label="Errors", widget=forms.Select(attrs={
+        'class':'error_types'}), choices=choices)
     class Meta:
         model = UIDError
