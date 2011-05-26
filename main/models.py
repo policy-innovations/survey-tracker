@@ -14,24 +14,6 @@ class Project(models.Model):
     def __unicode__(self):
         return self.name.title()
 
-class Role(MPTTModel):
-    '''
-    This will generate a hierarchy of people according to their
-    posts.
-    '''
-    name = models.CharField(_('name'), max_length=100)
-    head = TreeForeignKey('self', null=True, blank=True,
-                          related_name='subordinate')
-    project = models.ForeignKey(Project)
-    user = models.ForeignKey(User)
-
-    class MPTTMeta:
-        order_insertion_by = ['name']
-        parent_attr = 'head'
-
-    def __unicode__(self):
-        return self.name.title()
-
 class ErrorType(MPTTModel):
     '''
     Possible errors which can occur in the survey. These are nested. An
@@ -58,9 +40,6 @@ class UIDStatus(models.Model):
     #The people who are responsible for this survey uid.
     errors = models.ManyToManyField(ErrorType, null=True, blank=True,
                                     through='UIDError')
-    responsibles = models.ManyToManyField(Role,
-                                          verbose_name=_('responsible people'),
-                                          )
     project = models.ForeignKey(Project)
 
     class Meta:
@@ -82,6 +61,28 @@ class UIDStatus(models.Model):
                   )
             query |= q
         return Role.objects.filter(query)
+
+class Role(MPTTModel):
+    '''
+    This will generate a hierarchy of people according to their
+    posts.
+    '''
+    name = models.CharField(_('name'), max_length=100)
+    head = TreeForeignKey('self', null=True, blank=True,
+                          related_name='subordinate')
+    project = models.ForeignKey(Project)
+    user = models.ForeignKey(User)
+    uids = models.ManyToManyField(UIDStatus,
+                                  verbose_name=_('uid statuses'),
+                                  related_name=_('responsible people')
+                                  )
+
+    class MPTTMeta:
+        order_insertion_by = ['name']
+        parent_attr = 'head'
+
+    def __unicode__(self):
+        return self.name.title()
 
 class UIDError(models.Model):
     '''
