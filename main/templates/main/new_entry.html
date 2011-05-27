@@ -4,61 +4,75 @@
 </script>
 <script type="text/javascript">
     $(document).ready(function(){
-        var error_list;
-        $.getJSON('/get-error-types/', function(data){
-            error_list = data;
-            //alert('Fetched ' + error_list.length + ' items!');
-        });
-        
-        $(".error_types").live('change', function(){
-            error_type = $(this);
-            $(".sub_errors").each(function(){
-                if (String(jQuery(this).attr("form_id")) == String(error_type.get(0).id)) {
-                    $(this).remove();
+            var index = 0;
+            var error_types = new Array();
+
+            var error_list;
+            $.getJSON('/get-error-types/', function(data){
+                error_list = data;
+                for(i=0; i<error_list.length;i++){
+                if(error_list[i].fields.level == 0)
+                error_types.push(error_list[i]);
                 }
-            });
-            sel_error = parseInt($(this).val());
-            if (isNaN(sel_error) == false) {
+                //alert(error_types.length);
+                $(".error_types").each(function(){
+                    $(this).val(error_types[index].pk).change();
+                    $(this).attr("disabled", "disabled");
+                    index += 1;
+                    });
+
+                //alert('Fetched ' + error_list.length + ' items!');
+                });
+            $(".error_types").live('change', function(){
+                error_type = $(this);
+                $(".sub_errors").each(function(){
+                    if (String(jQuery(this).attr("form_id")) == String(error_type.get(0).id)) {
+                    $(this).remove();
+                    }
+                    });
+                sel_error = parseInt($(this).val());
+                if (isNaN(sel_error) == false) {
                 var output = "&nbsp;&nbsp;"
                 output += "<select class=\"sub_errors\" level=\"1\" id=\"id_sub_errors_1\" form_id=\"" + jQuery(this).get(0).id + "\">";
                 output += "<option value=\"\" selected=\"selected\">------------</option>";
                 for (i = 0; i < error_list.length; i++) {
-                    if (error_list[i].fields.parent == sel_error) {
-                        output += "<option value=\"" + error_list[i].pk + "\">" + error_list[i].fields.name + "</option>";
-                    }
+                if (error_list[i].fields.parent == sel_error) {
+                output += "<option value=\"" + error_list[i].pk + "\">" + error_list[i].fields.name + "</option>";
+                }
                 }
                 output += "</select>&nbsp;&nbsp;";
                 $(output).insertAfter($(this));
-            }
-        });
-        $(".sub_errors").live('change', function(){
-			sel_sub_error_form_id = $(this).attr("form_id");
-            sel_sub_error = parseInt($(this).val());
-            level = jQuery(this).attr("level");
-            child_count = 0;
-            if (isNaN(sel_sub_error) == false) {
-                level = parseInt(level) + 1;
-                $(".sub_errors").each(function(){
-                    if (parseInt(jQuery(this).attr("level")) >= level) {
-						if(String(jQuery(this).attr("form_id")) == String(sel_sub_error_form_id))
-                            $(this).remove();
-                    }
+                }
                 });
-                var output = "&nbsp;&nbsp;"
-                output += "<select class=\"sub_errors\" level=\"" + level + "\" id=\"id_sub_errors_" + level + "\" form_id=\"" + sel_sub_error_form_id + "\">";
-                output += "<option value=\"\" selected=\"selected\">------------</option>";
-                for (i = 0; i < error_list.length; i++) {
+            $(".sub_errors").live('change', function(){
+                    sel_sub_error_form_id = $(this).attr("form_id");
+                    sel_sub_error = parseInt($(this).val());
+                    level = jQuery(this).attr("level");
+                    child_count = 0;
+                    if (isNaN(sel_sub_error) == false) {
+                    level = parseInt(level) + 1;
+                    $(".sub_errors").each(function(){
+                        if (parseInt(jQuery(this).attr("level")) >= level) {
+                        if(String(jQuery(this).attr("form_id")) == String(sel_sub_error_form_id))
+                        $(this).remove();
+                        }
+                        });
+                    var output = "&nbsp;&nbsp;"
+                    output += "<select class=\"sub_errors\" level=\"" + level + "\" id=\"id_sub_errors_" + level + "\" form_id=\"" + sel_sub_error_form_id + "\">";
+                    output += "<option value=\"\" selected=\"selected\">------------</option>";
+                    for (i = 0; i < error_list.length; i++) {
                     if (error_list[i].fields.parent == sel_sub_error) {
-                        child_count += 1;
-                        output += "<option value=\"" + error_list[i].pk + "\">" + error_list[i].fields.name + "</option>";
+                    child_count += 1;
+                    output += "<option value=\"" + error_list[i].pk + "\">" + error_list[i].fields.name + "</option>";
                     }
-                }
-                output += "</select>&nbsp;&nbsp;";
-                if (child_count > 0) {
-                    $(output).insertAfter($(this));
-                }
-            }
-        });
+                    }
+                    output += "</select>&nbsp;&nbsp;";
+                    if (child_count > 0) {
+                        $(output).insertAfter($(this));
+                    }
+                    }
+            });
+
     });
 </script>
 {% endblock %}
@@ -74,25 +88,25 @@
     {% endfor %}
 </fieldset>
 <fieldset class="module aligned ">
-<h2>Errors</h2>
-<table">
-{% for f in uid_error_formset.forms %}
-<tr class="error_forms">
-    {% for field in f %}
-    {% if not field.is_hidden %}
-    <td>
-        {{ field.errors }}
-        {{ field }}
-    </td>
-    {% else %}
-    <td valign="middle">
-        {{ field }}
-    </td>
-    {% endif %} 
-    {% endfor %} 
-</tr>
-<br/>
-{% endfor %}
-</table>
+    <h2>Errors</h2>
+    <table">
+        {% for f in uid_error_formset.forms %}
+        <tr class="error_forms">
+            {% for field in f %}
+            {% if not field.is_hidden %}
+            <td>
+                {{ field.errors }}
+                {{ field }}
+            </td>
+            {% else %}
+            <td valign="middle">
+                {{ field }}
+            </td>
+            {% endif %} 
+            {% endfor %} 
+        </tr>
+        <br/>
+        {% endfor %}
+    </table>
 </fieldset>
 {% endblock %}
