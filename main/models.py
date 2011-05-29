@@ -106,7 +106,7 @@ class UIDStatus(models.Model):
     errors = models.ManyToManyField(ErrorType, null=True, blank=True,
                                     through='UIDError', editable=False)
     project = models.ForeignKey(Project)
-    role = models.ForeignKey(Role,
+    role = models.ForeignKey(Role, blank=True, null=True,
                              verbose_name=_('main responsible person'),
                              related_name='uidstatuses')
 
