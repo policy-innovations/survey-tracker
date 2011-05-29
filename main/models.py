@@ -118,7 +118,11 @@ class UIDStatus(models.Model):
         return self.uid
 
     def responsible_people(self):
-        return self.role.get_descendants()
+        '''
+        TODO: Write this
+        '''
+        return 'Not yet implemented'
+
 
 class UIDError(models.Model):
     '''
