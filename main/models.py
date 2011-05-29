@@ -14,6 +14,12 @@ class Project(models.Model):
     def __unicode__(self):
         return self.name.title()
 
+    def get_hierarchy(self):
+        return self.role_set.get(head__isnull=True)
+
+    def get_leafnodes(self, inc_self=True):
+        return self.get_hierarchy().get_leafnodes(include_self=inc_self)
+
 class ErrorType(MPTTModel):
     '''
     Possible errors which can occur in the survey. These are nested. An
@@ -40,11 +46,6 @@ class Role(MPTTModel):
                           related_name='subordinate')
     project = models.ForeignKey(Project)
     user = models.ForeignKey(User)
-    #Not using role assigned uids now
-    #uids = models.ManyToManyField(UIDStatus, blank=True
-                                  #verbose_name=_('uid statuses'),
-                                  #related_name=_('responsible people')
-                                  #)
 
     class MPTTMeta:
         order_insertion_by = ['name']
@@ -119,9 +120,13 @@ class UIDStatus(models.Model):
 
     def responsible_people(self):
         '''
-        TODO: Write this
+        Gives the leaf nodes of the tree below a uid-role's nodes or all
+        project leaf nodes if none is assigned.
         '''
-        return 'Not yet implemented'
+        if self.role:
+            return self.role.get_leafnodes(include_self=True)
+        else:
+            return self.project.get_leafnodes()
 
 
 class UIDError(models.Model):
