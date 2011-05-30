@@ -111,6 +111,11 @@ class UIDStatus(models.Model):
                              verbose_name=_('main responsible person'),
                              related_name='uidstatuses')
 
+    # This field name is not a word will be updated as soon as this Q is
+    # answered: http://j.mp/j4VDIO
+    completer = models.ForeignKey(Role, blank=True, null=True,
+                                  verbose_name=_('who did it?'))
+
     class Meta:
         verbose_name =  _('UID status')
         verbose_name_plural=_('UID statuses')
