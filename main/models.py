@@ -7,19 +7,6 @@ from django.contrib.auth.models import User
 from mptt.models import MPTTModel
 from mptt.fields import TreeForeignKey
 
-class Project(models.Model):
-    name = models.CharField(_('name'), max_length=100)
-    users = models.ManyToManyField(User, blank=True)
-
-    def __unicode__(self):
-        return self.name.title()
-
-    def get_hierarchy(self):
-        return self.role_set.get(head__isnull=True)
-
-    def get_leafnodes(self, inc_self=True):
-        return self.get_hierarchy().get_leafnodes(include_self=inc_self)
-
 class ErrorType(MPTTModel):
     '''
     Possible errors which can occur in the survey. These are nested. An
@@ -44,7 +31,6 @@ class Role(MPTTModel):
     name = models.CharField(_('name'), max_length=100)
     head = TreeForeignKey('self', null=True, blank=True,
                           related_name='subordinate')
-    project = models.ForeignKey(Project)
     user = models.ForeignKey(User)
 
     class MPTTMeta:
@@ -53,6 +39,10 @@ class Role(MPTTModel):
 
     def __unicode__(self):
         return self.name.title()
+
+    def get_project(self):
+        return self.get_root().project
+    get_project.short_description = _('project')
 
     def uids(self):
         '''
@@ -85,7 +75,8 @@ class Role(MPTTModel):
         The rest will be open for distribution and under everybody's
         (except B subtree's) responsibility.
         '''
-        project_uids = self.project.uidstatus_set.all()
+        project = self.get_project()
+        project_uids = project.uidstatus_set.all()
 
         ancestors = self.get_ancestors(include_self=True)
         assigned_ancestors = ancestors.filter(uidstatuses__isnull=False)
@@ -95,6 +86,22 @@ class Role(MPTTModel):
         return project_uids.filter(role__isnull=True)
 
     uids.short_description = _('UID Statuses')
+
+class Project(models.Model):
+    name = models.CharField(_('name'), max_length=100)
+    users = models.ManyToManyField(User, blank=True)
+    # This stores the topmost node of the tree whole children form the
+    # hierarchy
+    hierarchy = models.OneToOneField(Role, blank=True, null=True,
+                                     related_name='project')
+    # Tree heads of errors which can occur in the project
+    error_types = models.ManyToManyField(ErrorType, blank=True, null=True)
+
+    def __unicode__(self):
+        return self.name.title()
+
+    def get_leafnodes(self, inc_self=True):
+        return self.hierarchy.get_leafnodes(include_self=inc_self)
 
 class UIDStatus(models.Model):
     '''

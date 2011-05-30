@@ -16,3 +16,13 @@ class UIDErrorForm(forms.ModelForm):
     class Meta:
         model = UIDError
         exclude = ('uid_status',)
+
+class ProjectAdminForm(forms.ModelForm):
+    hierarchy = forms.ModelChoiceField(queryset=Role.objects.filter(head__isnull=True))
+    error_types = forms.ModelMultipleChoiceField(queryset=ErrorType.objects.filter(parent__isnull=True))
+
+    class Meta:
+        model=Project
+
+    def __init__(self, *args, **kwargs):
+        form = super(ProjectAdminForm, self).__init__(*args, **kwargs)

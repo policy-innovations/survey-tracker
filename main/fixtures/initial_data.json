@@ -1,8 +1,153 @@
 [
   {
     "pk": 1,
+    "model": "main.role",
+    "fields": {
+      "rght": 22,
+      "head": null,
+      "name": "A",
+      "level": 0,
+      "lft": 1,
+      "user": 3,
+      "tree_id": 1
+    }
+  },
+  {
+    "pk": 2,
+    "model": "main.role",
+    "fields": {
+      "rght": 13,
+      "head": 1,
+      "name": "B",
+      "level": 1,
+      "lft": 2,
+      "user": 4,
+      "tree_id": 1
+    }
+  },
+  {
+    "pk": 3,
+    "model": "main.role",
+    "fields": {
+      "rght": 6,
+      "head": 2,
+      "name": "D",
+      "level": 2,
+      "lft": 3,
+      "user": 5,
+      "tree_id": 1
+    }
+  },
+  {
+    "pk": 4,
+    "model": "main.role",
+    "fields": {
+      "rght": 5,
+      "head": 3,
+      "name": "H",
+      "level": 3,
+      "lft": 4,
+      "user": 6,
+      "tree_id": 1
+    }
+  },
+  {
+    "pk": 5,
+    "model": "main.role",
+    "fields": {
+      "rght": 8,
+      "head": 2,
+      "name": "E",
+      "level": 2,
+      "lft": 7,
+      "user": 7,
+      "tree_id": 1
+    }
+  },
+  {
+    "pk": 6,
+    "model": "main.role",
+    "fields": {
+      "rght": 12,
+      "head": 2,
+      "name": "F",
+      "level": 2,
+      "lft": 9,
+      "user": 8,
+      "tree_id": 1
+    }
+  },
+  {
+    "pk": 7,
+    "model": "main.role",
+    "fields": {
+      "rght": 11,
+      "head": 6,
+      "name": "I",
+      "level": 3,
+      "lft": 10,
+      "user": 9,
+      "tree_id": 1
+    }
+  },
+  {
+    "pk": 8,
+    "model": "main.role",
+    "fields": {
+      "rght": 21,
+      "head": 1,
+      "name": "C",
+      "level": 1,
+      "lft": 14,
+      "user": 10,
+      "tree_id": 1
+    }
+  },
+  {
+    "pk": 9,
+    "model": "main.role",
+    "fields": {
+      "rght": 20,
+      "head": 8,
+      "name": "G",
+      "level": 2,
+      "lft": 15,
+      "user": 11,
+      "tree_id": 1
+    }
+  },
+  {
+    "pk": 10,
+    "model": "main.role",
+    "fields": {
+      "rght": 17,
+      "head": 9,
+      "name": "J",
+      "level": 3,
+      "lft": 16,
+      "user": 12,
+      "tree_id": 1
+    }
+  },
+  {
+    "pk": 11,
+    "model": "main.role",
+    "fields": {
+      "rght": 19,
+      "head": 9,
+      "name": "K",
+      "level": 3,
+      "lft": 18,
+      "user": 13,
+      "tree_id": 1
+    }
+  },
+  {
+    "pk": 1,
     "model": "main.project",
     "fields": {
+      "hierarchy": null,
+      "error_types": [],
       "name": "Base Project",
       "users": [
         3,
@@ -21,156 +166,32 @@
   },
   {
     "pk": 1,
-    "model": "main.role",
+    "model": "main.uidstatus",
     "fields": {
-      "rght": 22,
-      "head": null,
-      "name": "A",
-      "level": 0,
       "project": 1,
-      "lft": 1,
-      "user": 3,
-      "tree_id": 1
+      "completer": null,
+      "role": 8,
+      "uid": "012321"
     }
   },
   {
     "pk": 2,
-    "model": "main.role",
+    "model": "main.uidstatus",
     "fields": {
-      "rght": 13,
-      "head": 1,
-      "name": "B",
-      "level": 1,
       "project": 1,
-      "lft": 2,
-      "user": 4,
-      "tree_id": 1
+      "completer": null,
+      "role": 5,
+      "uid": "123213"
     }
   },
   {
     "pk": 3,
-    "model": "main.role",
+    "model": "main.uidstatus",
     "fields": {
-      "rght": 6,
-      "head": 2,
-      "name": "D",
-      "level": 2,
       "project": 1,
-      "lft": 3,
-      "user": 5,
-      "tree_id": 1
-    }
-  },
-  {
-    "pk": 4,
-    "model": "main.role",
-    "fields": {
-      "rght": 5,
-      "head": 3,
-      "name": "H",
-      "level": 3,
-      "project": 1,
-      "lft": 4,
-      "user": 6,
-      "tree_id": 1
-    }
-  },
-  {
-    "pk": 5,
-    "model": "main.role",
-    "fields": {
-      "rght": 8,
-      "head": 2,
-      "name": "E",
-      "level": 2,
-      "project": 1,
-      "lft": 7,
-      "user": 7,
-      "tree_id": 1
-    }
-  },
-  {
-    "pk": 6,
-    "model": "main.role",
-    "fields": {
-      "rght": 12,
-      "head": 2,
-      "name": "F",
-      "level": 2,
-      "project": 1,
-      "lft": 9,
-      "user": 8,
-      "tree_id": 1
-    }
-  },
-  {
-    "pk": 7,
-    "model": "main.role",
-    "fields": {
-      "rght": 11,
-      "head": 6,
-      "name": "I",
-      "level": 3,
-      "project": 1,
-      "lft": 10,
-      "user": 9,
-      "tree_id": 1
-    }
-  },
-  {
-    "pk": 8,
-    "model": "main.role",
-    "fields": {
-      "rght": 21,
-      "head": 1,
-      "name": "C",
-      "level": 1,
-      "project": 1,
-      "lft": 14,
-      "user": 10,
-      "tree_id": 1
-    }
-  },
-  {
-    "pk": 9,
-    "model": "main.role",
-    "fields": {
-      "rght": 20,
-      "head": 8,
-      "name": "G",
-      "level": 2,
-      "project": 1,
-      "lft": 15,
-      "user": 11,
-      "tree_id": 1
-    }
-  },
-  {
-    "pk": 10,
-    "model": "main.role",
-    "fields": {
-      "rght": 17,
-      "head": 9,
-      "name": "J",
-      "level": 3,
-      "project": 1,
-      "lft": 16,
-      "user": 12,
-      "tree_id": 1
-    }
-  },
-  {
-    "pk": 11,
-    "model": "main.role",
-    "fields": {
-      "rght": 19,
-      "head": 9,
-      "name": "K",
-      "level": 3,
-      "project": 1,
-      "lft": 18,
-      "user": 13,
-      "tree_id": 1
+      "completer": null,
+      "role": null,
+      "uid": "22341324"
     }
   }
 ]
