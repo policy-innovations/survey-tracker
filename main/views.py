@@ -12,7 +12,6 @@ def home(request):
 
 def new_entry(request):
     count = len(ErrorType.objects.all().filter(level=0))
-    print count
     uid_status_form = UIDStatusForm()
     uid_error_formset = formset_factory(UIDErrorForm, extra=count)
     return render(request, 'main/new_entry.html', {'uid_status_form':
