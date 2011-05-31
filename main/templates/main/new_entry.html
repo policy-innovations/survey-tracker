@@ -94,7 +94,7 @@
 {% endblock %}
 {% block content %}
 <fieldset class="module aligned ">
-    {% for field in uid_status_form %}
+    {% for field in uid__form %}
     <div class="form-row">
         <div class="field-box">
             {{ field.errors }}
@@ -107,7 +107,7 @@
 <fieldset class="module aligned " style="display:none;" id="errors">
     <h2>Errors</h2>
     <table">
-        {% for f in uid_error_formset.forms %}
+        {% for f in error_formset.forms %}
         <tr class="error_forms">
             {% for field in f %}
             {% if not field.is_hidden %}
