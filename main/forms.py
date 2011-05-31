@@ -24,7 +24,11 @@ class ErrorForm(forms.ModelForm):
     This is an error form which is to be filled in for associating errors
     with a UID.
     Call it via ajax for error.
+
     '''
+    etype = TreeNodeChoiceField(queryset=ErrorType.objects.all(),
+            widget=forms.Select(attrs={'class':'error_types'}))
+
     class Meta:
         model = UIDError
 
@@ -38,7 +42,8 @@ class ErrorForm(forms.ModelForm):
         for et in project.error_types.all():
             q = Q(lft__gte=et.lft, rght__lte=et.rght)
             query |= q
-        self.fields['etype'].queryset = ErrorType.objects.filter(query)
+        self.fields['etype'].queryset = ErrorType.objects.filter(query).order_by('level')
+        #self.fields['etype'].queryset = err_type.get_descendants(include_self=True)
 
     def clean_etype(self):
         et = self.cleaned_data['etype']
@@ -50,7 +55,7 @@ class ErrorForm(forms.ModelForm):
 # This is yet to be completed
 class UIDForm(forms.Form):
     completer = forms.ModelChoiceField(queryset=Role.objects.all())
-    error_types = forms.ModelChoiceField(queryset=ErrorType.objects.all())
+    #error_types = forms.ModelChoiceField(queryset=ErrorType.objects.all())
 
 
 class ProjectAdminForm(forms.ModelForm):

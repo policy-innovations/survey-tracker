@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% block head %}
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"
+    type="text/javascript">
+</script>
+<script type="text/javascript">
+    $(document).ready(function(){
+            var index = 0;
+            var error_types = new Array();
+            var error_list;
+            if($("#survey_status").attr("checked")==true)
+                $("#errors").show();
+            $.getJSON('/get-error-types/', function(data){
+                error_list = data;
+                for(i=0; i<error_list.length;i++){
+                if(error_list[i].fields.level == 0)
+                error_types.push(error_list[i]);
+                }
+                //alert(error_types);
+                $(".error_types").each(function(){
+                    $(this).val(error_types[index].pk).change();
+                    $(this).attr("disabled", "disabled");
+                    index += 1;
+                    });
+                });
+            $("#survey_status").live('change', function(){
+                if($("#survey_status").attr("checked")==true)
+                    $("#errors").show();
+                    else
+                    $("#errors").hide();
+
+                    });
+            $(".error_types").live('change', function(){
+                error_type = $(this);
+                $(".sub_errors").each(function(){
+                    if (String(jQuery(this).attr("form_id")) == String(
+                            error_type.get(0).id)) {
+                    $(this).remove();
+                    }
+                    });
+                sel_error = parseInt($(this).val());
+                if (isNaN(sel_error) == false) {
+                var output = "&nbsp;&nbsp;"
+                output += "<select class=\"sub_errors\" level=\"1\"";
+                output += "id=\"id_sub_errors_1\" form_id=\"";
+                output += jQuery(this).get(0).id + "\">";
+                output += "<option value=\"\" selected=\"selected\">";
+                output += "------------</option>";
+                for (i = 0; i < error_list.length; i++) {
+                if (error_list[i].fields.parent == sel_error) {
+                output += "<option value=\"" + error_list[i].pk +
+                "\">" + error_list[i].fields.name + "</option>";
+                }
+                }
+                output += "</select>&nbsp;&nbsp;";
+                $(output).insertAfter($(this));
+                }
+            });
+            $(".sub_errors").live('change', function(){
+                    sel_sub_error_form_id = $(this).attr("form_id");
+                    sel_sub_error = parseInt($(this).val());
+                    level = jQuery(this).attr("level");
+                    child_count = 0;
+                    if (isNaN(sel_sub_error) == false) {
+                    level = parseInt(level) + 1;
+                    $(".sub_errors").each(function(){
+                        if (parseInt(jQuery(this).attr("level")) >= level) {
+                        if(String(jQuery(this).attr("form_id")) == String(
+                                sel_sub_error_form_id))
+                        $(this).remove();
+                        }
+                        });
+                    var output = "&nbsp;&nbsp;"
+                    output += "<select class=\"sub_errors\" level=\"" +
+                    level + "\" id=\"id_sub_errors_" + level +
+                    "\" form_id=\"" + sel_sub_error_form_id + "\">";
+                    output += "<option value=\"\" selected=\"selected\">" +
+                    "------------</option>";
+                    for (i = 0; i < error_list.length; i++) {
+                        if (error_list[i].fields.parent == sel_sub_error) {
+                            child_count += 1;
+                            output += "<option value=\"" + error_list[i].pk +
+                                "\">" + error_list[i].fields.name + "</option>";
+                        }
+                    }
+                    output += "</select>&nbsp;&nbsp;";
+                    if (child_count > 0) {
+                        $(output).insertAfter($(this));
+                    }
+                    }
+            });
+
+    });
+</script>
+{% endblock %}
+{% block content %}
+<form action="" method="post">
+    {% csrf_token %}
+    <table>
+        {{ uid_form.as_table }}
+    </table>
+    <input type="checkbox" id="survey_status"/>Incomplete<br/>
+    {{ formset.management_form }}
+    <table id="errors" style="display:none;">
+        {% for form in formset %}
+        {{ form.as_table }}
+        {% endfor %}
+    </table>
+    <input type="submit" value="Submit">
+</form>
+{% endblock %}

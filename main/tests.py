@@ -28,7 +28,11 @@ class RoleTreeTest(TestCase):
 class ErrorTest(TestCase):
     def test_error_form(self):
         role = Role.objects.get(pk=1)
+        etype = ErrorType.objects.get(pk=1)
+        #f = ErrorForm(role, etype)
+        #print f
         f = ErrorForm(role, {'etype':1, 'uid_status':1})
+        print f
         # Wrong uid_status
         self.assertEqual(f.is_valid(), False)
         # Wrong error type

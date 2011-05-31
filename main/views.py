@@ -5,6 +5,7 @@ from django.core import serializers
 from django.forms.formsets import formset_factory
 from django.contrib.auth.decorators import login_required
 from django.utils.functional import curry
+from django.utils import simplejson
 import settings
 from main.forms import *
 from main.models import *
@@ -12,22 +13,21 @@ from main.models import *
 def home(request):
     return render(request, 'main/home.html',)
 
-def new_entry(request):
-    count = len(ErrorType.objects.all().filter(level=0))
-    uid_form = UIDForm()
-    error_formset = formset_factory(ErrorForm, extra=count)
-    return render(request, 'main/new_entry.html', {'uid_form':
-        uid_form, 'error_formset':error_formset})
-
 @login_required
 def add_entry(request, proj_pk):
     role = get_object_or_404(Role, user=request.user)
-    count = len(ErrorType.objects.all().filter(level=0))
-    uid_form = UIDForm()
-    error_formset = formset_factory(curry(ErrorForm, role=role), extra=count)
-    print error_formset
-    return render(request, 'main/add_entry.html', {'uid_form':
-        uid_form, 'error_formset':error_formset})
+    ErrorFormset = formset_factory(ErrorForm, extra = len(ErrorType.objects.all().filter(level=0)))
+    if request.method == 'POST':
+        formset = ErrorFormset(request.POST, request.FILES)
+        if formset.is_valid():
+            for form in formset:
+                print form
+    else:
+        ErrorFormset.form = staticmethod(curry(ErrorForm, role))
+        formset = ErrorFormset()
+        uid_form = UIDForm()
+        return render(request, 'main/add_entry.html', {'uid_form':uid_form,
+            'formset':formset})
 
 def get_error_types(request):
     mimetype = 'application/json'
@@ -35,3 +35,24 @@ def get_error_types(request):
     data = json_serializer.serialize(ErrorType.objects.all(),
             ensure_ascii=False, fields=('name', 'id', 'parent', 'level'))
     return HttpResponse(data, mimetype)
+
+def get_errors(request):
+    mimetype = 'application/json'
+    json_serializer = serializers.get_serializer("json")()
+    errors = []
+    for e in ErrorType.objects.all().filter(level=0):
+        d = {}
+        children = []
+        for ec in e.get_children():
+            c = {}
+            c['pk'] = ec.pk
+            c['name'] = ec.name
+            children.append(c)
+        d['pk'] = e.pk
+        d['name'] = e.name
+        d['children'] = children
+        errors.append(d)
+    print errors
+    #data = json_serializer.serialize(errors, ensure_ascii=False)
+    #return HttpResponse(data, mimetype)
+    return HttpResponse(simplejson.dumps(errors), mimetype)
