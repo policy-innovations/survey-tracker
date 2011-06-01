@@ -27,6 +27,14 @@ def add_entry(request, proj_pk):
         return render(request, 'main/add_entry.html', {'uid_form':uid_form,
             'formset':formset})
 
+@login_required
+def manage_uids(request, role_id):
+    role = Role.objects.get(id=role_id)
+    context = {
+        'role':role,
+    }
+    return render(request, 'main/manage_uids.html', context)
+
 def get_error_types(request):
     mimetype = 'application/json'
     json_serializer = serializers.get_serializer("json")()
