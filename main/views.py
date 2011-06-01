@@ -1,20 +1,13 @@
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse,HttpResponseRedirect, Http404
 from django.shortcuts import render, redirect
 from django.core import serializers
 from django.core.urlresolvers import reverse
 from django.forms.formsets import formset_factory
-#from django.utils.functional import curry
-
 from django.contrib.auth.decorators import login_required
-<<<<<<< HEAD
 from django.utils.functional import curry
 from django.utils import simplejson
 from django.core.urlresolvers import reverse
-from main.forms import ErrorForm, UIDForm
-=======
-
-from main.forms import UIDForm, UIDAssignmentForm
->>>>>>> 976d624d5fde05ebb4e2d6d4b124f980f0669884
+from main.forms import ErrorForm, UIDForm, UIDAssignmentForm
 from main.models import ErrorType, Role, Project, UIDStatus
 
 def home(request):

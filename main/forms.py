@@ -63,7 +63,6 @@ class UIDForm(forms.Form):
 
     def clean_uid(self):
         cleaned_data = self.cleaned_data
-<<<<<<< HEAD
         uid = cleaned_data["uid"]
         try:
             uid_status = UIDStatus.objects.get(uid=uid)
@@ -81,12 +80,6 @@ class UIDForm(forms.Form):
         if commit:
             uid_status.save()
         return uid_status
-=======
-        uid = cleaned_data.get("uid")
-        if not uid in 
-
-    '''
->>>>>>> 976d624d5fde05ebb4e2d6d4b124f980f0669884
 
 class UIDAssignmentForm(forms.Form):
     uids = forms.ModelMultipleChoiceField(queryset=Role.objects.all(),
