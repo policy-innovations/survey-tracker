@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h3>Select Surveyor</h3>
+<table>
+    {% for surveyor in surveyors %}
+    <tr>
+        <td>{{ surveyor.name }}</td>
+        <td><a href="{% url add-entry surveyor.id %}">Add Entry</a></td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}
