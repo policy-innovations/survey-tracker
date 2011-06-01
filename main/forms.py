@@ -55,7 +55,7 @@ class ErrorForm(forms.ModelForm):
 
 # This is yet to be completed
 class UIDForm(forms.Form):
-    uid = forms.CharField(label="UID")
+    uid = forms.CharField(label="UID", required=True)
 
     def __init__(self, role, *args, **kwargs):
         self.role = role
@@ -75,7 +75,10 @@ class UIDForm(forms.Form):
         return self.cleaned_data['uid']
 
     def save(self, force_insert=False, force_update=False, commit=True):
-        uid_status = UIDStatus.objects.get(uid=self.cleaned_data['uid'])
+        try:
+            uid_status = UIDStatus.objects.get(uid=self.cleaned_data['uid'])
+        except:
+            return None
         uid_status.completer = self.role
         if commit:
             uid_status.save()
