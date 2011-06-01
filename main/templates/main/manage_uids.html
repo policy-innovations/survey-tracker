@@ -2,13 +2,21 @@
 
 {% block content %}
 {% if role.uidstatuses.all %}
-Managed UIDs: {{ role.uidstatuses.all }}
-{% else %}
-Responsible for UIDs: {{ role.uids }}
-{% endif %}
-<br/>
+You managed following UIDs:</br>
+{% for uid in  role.uidstatuses.all %}
+{{ uid }}
+{% endfor %}
 <h3>Manage</h3>
 {% for sub in role.get_children %}
-<b>{{ sub }}</b></br>
+<b><a href="{% url manage-sub-uids role.id sub.id %}">{{ sub }}</a></b></br>
 {% endfor %}
+{% else %}
+You and your subordinates have the responsiblity of following uids:
+<br/>
+{% for uid in  role.uids %}
+{{ uid }}
+{% endfor %}
+{% endif %}
+<br/>
+
 {% endblock %}

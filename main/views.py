@@ -35,6 +35,15 @@ def manage_uids(request, role_id):
     }
     return render(request, 'main/manage_uids.html', context)
 
+@login_required
+def manage_sub_uids(request, role_id, sub_role):
+    role = Role.objects.get(id=role_id)
+
+    context = {
+        'role':role,
+    }
+    return render(request, 'main/manage_sub_uids.html', context)
+
 def get_error_types(request):
     mimetype = 'application/json'
     json_serializer = serializers.get_serializer("json")()
