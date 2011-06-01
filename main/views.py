@@ -1,10 +1,13 @@
 from django.http import HttpResponse, Http404
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.core import serializers
+from django.core.urlresolvers import reverse
 from django.forms.formsets import formset_factory
-from django.contrib.auth.decorators import login_required
 from django.utils.functional import curry
-from main.forms import ErrorForm, UIDForm
+
+from django.contrib.auth.decorators import login_required
+
+from main.forms import ErrorForm, UIDForm, UIDAssignmentForm
 from main.models import ErrorType, Role, Project
 
 def home(request):
@@ -40,8 +43,11 @@ def manage_uids(request, role_id):
     if not request.user == role.user:
         raise Http404
 
+    manages = role.managed_uids().count() > 0
+
     context = {
         'role':role,
+        'manages':manages,
     }
     return render(request, 'main/manage_uids.html', context)
 
@@ -52,10 +58,26 @@ def manage_sub_uids(request, role_id, sub_role):
         raise Http404
 
     subordinate = role.get_children().get(id=sub_role)
+    manages = role.managed_uids().count() > 0
+
+    if request.method=='POST':
+        form = UIDAssignmentForm(role, request.POST)
+        if form.is_valid():
+            return redirect(reverse('manage-sub-uids', kwargs={
+                    'role_id':role_id,
+                    'sub_role':sub_role,
+                }))
+    else:
+        form = UIDAssignmentForm(role,
+                                 initial={
+                                    'uids':subordinate.uidstatuses.all(),
+                                 })
 
     context = {
         'role':role,
-        'subordinate':subordinate,
+        'sub':subordinate,
+        'form':form,
+        'manages':manages,
     }
     return render(request, 'main/manage_sub_uids.html', context)
 

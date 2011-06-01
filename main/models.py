@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 
 from django.contrib.auth.models import User
@@ -42,6 +43,11 @@ class Role(MPTTModel):
     def get_project(self):
         return self.get_root().project
     get_project.short_description = _('project')
+
+    def managed_uids(self):
+        project_uids = self.get_project().uidstatus_set.all()
+        query = Q(role__in=self.get_descendants(include_self=True))
+        return project_uids.filter(query)
 
     def uids(self):
         '''

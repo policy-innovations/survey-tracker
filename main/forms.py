@@ -1,6 +1,8 @@
 from django import forms
+from django.utils.translation import ugettext_lazy as _
 from django.db.models import Q
 
+from django.contrib.admin.widgets import FilteredSelectMultiple
 from mptt.forms import TreeNodeChoiceField
 from main.models import UIDStatus, Role, ErrorType, UIDError, Project
 
@@ -56,6 +58,18 @@ class UIDForm(forms.Form):
     completer = forms.ModelChoiceField(queryset=Role.objects.all())
     #error_types = forms.ModelChoiceField(queryset=ErrorType.objects.all())
 
+class UIDAssignmentForm(forms.Form):
+    uids = forms.ModelMultipleChoiceField(queryset=Role.objects.all(),
+                                          label=_('Select UIDs'),
+                                          required=False,
+                                          widget=FilteredSelectMultiple(
+                                                    _('select UIDs'),
+                                                    True,
+                                                 ))
+
+    def __init__(self, role, *args, **kwargs):
+        super(UIDAssignmentForm, self).__init__(*args, **kwargs)
+        self.fields['uids'].queryset = role.managed_uids()
 
 class ProjectAdminForm(forms.ModelForm):
     hierarchy = forms.ModelChoiceField(queryset=Role.objects.filter(head__isnull=True))
