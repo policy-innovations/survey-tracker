@@ -17,13 +17,14 @@ def home(request):
 def add_entry(request, proj_pk):
     role = get_object_or_404(Role, user=request.user)
     ErrorFormset = formset_factory(ErrorForm, extra = len(ErrorType.objects.all().filter(level=0)))
+    ErrorFormset.form = staticmethod(curry(ErrorForm, role))
     if request.method == 'POST':
         formset = ErrorFormset(request.POST, request.FILES)
+        #print formset
         if formset.is_valid():
             for form in formset:
                 print form
     else:
-        ErrorFormset.form = staticmethod(curry(ErrorForm, role))
         formset = ErrorFormset()
         uid_form = UIDForm()
         return render(request, 'main/add_entry.html', {'uid_form':uid_form,
