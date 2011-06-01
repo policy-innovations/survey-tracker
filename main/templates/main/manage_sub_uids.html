@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block head %}
+{{ form.media }}
+{% endblock %}
+{% block content %}
+<a href="/">Home</a> >
+<a href="{% url manage-uids role.id %}">Manage UIDs</a> >
+<a href="{% url manage-sub-uids role.id sub.id %}">{{ sub }}</a>
+<h3>Subordinate: {{ sub }}</h3>
+{% if manages %}
+<form action='' method='post'>
+{% csrf_token %}
+{{ form.as_p }}
+<input type="submit" value='Update'/>
+</form>
+{% else %}
+You have not been assigned UIDs for managing.
+{% endif %}
+{% endblock %}
