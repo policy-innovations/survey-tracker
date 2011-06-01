@@ -1,7 +1,7 @@
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 from django.db.models import Q
-
+from datetime import date, timedelta
 from django.contrib.admin.widgets import FilteredSelectMultiple
 from mptt.forms import TreeNodeChoiceField
 from main.models import UIDStatus, Role, ErrorType, UIDError, Project
@@ -56,6 +56,8 @@ class ErrorForm(forms.ModelForm):
 # This is yet to be completed
 class UIDForm(forms.Form):
     uid = forms.CharField(label="UID", required=True)
+    date = forms.DateField(label="Date of completion", required=True,
+            initial=date.today()-timedelta(days=2))
 
     def __init__(self, role, *args, **kwargs):
         self.role = role
@@ -80,6 +82,7 @@ class UIDForm(forms.Form):
         except:
             return None
         uid_status.completer = self.role
+        uid_status.date = self.cleaned_data['date']
         if commit:
             uid_status.save()
         return uid_status

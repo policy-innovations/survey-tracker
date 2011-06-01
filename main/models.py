@@ -126,7 +126,8 @@ class UIDStatus(models.Model):
     # This field name is not a word will be updated as soon as this Q is
     # answered: http://j.mp/j4VDIO
     completer = models.ForeignKey(Role, blank=True, null=True,
-                                  verbose_name=_('who did it?'))
+            verbose_name=_('who did it?'))
+    date = models.DateField(_('date of completion'), blank=True, null=True)
 
     class Meta:
         verbose_name =  _('UID status')
