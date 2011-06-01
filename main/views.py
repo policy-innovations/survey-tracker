@@ -5,6 +5,7 @@ from django.forms.formsets import formset_factory
 from django.contrib.auth.decorators import login_required
 from django.utils.functional import curry
 from django.utils import simplejson
+from django.core.urlresolvers import reverse
 from main.forms import ErrorForm, UIDForm
 from main.models import ErrorType, Role, Project, UIDStatus
 
@@ -14,7 +15,9 @@ def home(request):
 @login_required
 def select_surveyor(request, proj_pk):
     project = Project.objects.get(pk=proj_pk)
-    surveyors = project.hierarchy.get_leafnodes()
+    role = project.hierarchy.get_descendants(include_self=True).get(
+            user=request.user)
+    surveyors = role.get_leafnodes()
     return render(request, 'main/select_surveyor.html',
             {'surveyors':surveyors})
 
@@ -22,24 +25,27 @@ def select_surveyor(request, proj_pk):
 def add_completed_entry(request, role_id):
     role = Role.objects.get(id=role_id)
     UIDFormset = formset_factory(UIDForm)
+    UIDFormset.form = staticmethod(curry(UIDForm, role))
     if request.method == 'POST':
         formset = UIDFormset(request.POST, request.FILES)
-        for form in formset:
-            if form.is_valid():
-                uid_status = UIDStatus.objects.get(uid=form.cleaned_data['uid'])
-                if uid_status == None:
-                    return HttpResponse("Invalid UID")
-                elif uid_status not in role.uids():
-                    return HttpResponse("This surveyor was not assigned this id")
-                elif uid_status.completer is not None:
-                    return HttpResponse("Already entered")
-                else:
-                    uid_status.completer = role
-                    uid_status.save()
-        return HttpResponse("Feeling Good")
+        if formset.is_valid():
+            for form in formset:
+                form.save()
+            return HttpResponseRedirect(reverse('add-completed-entry-done',
+                kwargs={'role_id':role.id,}))
+        else:
+            return render(request, 'main/add_completed_entry.html',
+                    {'formset':formset})
     else:
         formset = UIDFormset()
-        return render(request, 'main/add_entry.html', {'formset':formset})
+        return render(request, 'main/add_completed_entry.html',
+                {'formset':formset})
+
+@login_required
+def add_completed_entry_done(request, role_id):
+    role = Role.objects.get(id=role_id)
+    return render(request, 'main/add_completed_entry_done.html', {'role':role})
+
 
 @login_required
 def manage_uids(request, role_id):

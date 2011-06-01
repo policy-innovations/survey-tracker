@@ -54,18 +54,30 @@ class ErrorForm(forms.ModelForm):
 # This is yet to be completed
 class UIDForm(forms.Form):
     uid = forms.CharField(label="UID")
-    '''
+
     def __init__(self, role, *args, **kwargs):
-        super(self.__class__, self).__init__(*args, **kwargs)
-        self.fields['uid'].queryset = role.uids()
+        self.role = role
+        super(UIDForm, self).__init__(*args, **kwargs)
 
-    def clean(self):
+    def clean_uid(self):
         cleaned_data = self.cleaned_data
-        uid = cleaned_data.get("uid")
+        uid = cleaned_data["uid"]
+        try:
+            uid_status = UIDStatus.objects.get(uid=uid)
+        except:
+            raise forms.ValidationError('Invalid UID.')
+        if uid_status not in self.role.uids():
+            raise forms.ValidationError('This UID was not assigned to this surveyor.')
+        elif uid_status.completer is not None:
+            raise forms.ValidationError('This UID has already been entered.')
+        return self.cleaned_data['uid']
 
-        if not uid in 
-
-    '''
+    def save(self, force_insert=False, force_update=False, commit=True):
+        uid_status = UIDStatus.objects.get(uid=self.cleaned_data['uid'])
+        uid_status.completer = self.role
+        if commit:
+            uid_status.save()
+        return uid_status
 
 class ProjectAdminForm(forms.ModelForm):
     hierarchy = forms.ModelChoiceField(queryset=Role.objects.filter(head__isnull=True))
