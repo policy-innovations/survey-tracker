@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% if role.uidstatuses.all %}
+Managed UIDs: {{ role.uidstatuses.all }}
+{% else %}
+Responsible for UIDs: {{ role.uids }}
+{% endif %}
+<br/>
+<h3>Manage</h3>
+{% for sub in role.get_children %}
+<b>{{ sub }}</b></br>
+{% endfor %}
+{% endblock %}

@@ -1,14 +1,12 @@
-from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render, get_object_or_404, render_to_response
-from django.template import RequestContext
+from django.http import HttpResponse
+from django.shortcuts import render, get_object_or_404
 from django.core import serializers
 from django.forms.formsets import formset_factory
 from django.contrib.auth.decorators import login_required
 from django.utils.functional import curry
 from django.utils import simplejson
-import settings
-from main.forms import *
-from main.models import *
+from main.forms import ErrorForm, UIDForm
+from main.models import ErrorType, Role
 
 def home(request):
     return render(request, 'main/home.html',)
@@ -30,6 +28,14 @@ def add_entry(request, proj_pk):
         return render(request, 'main/add_entry.html', {'uid_form':uid_form,
             'formset':formset})
 
+@login_required
+def manage_uids(request, role_id):
+    role = Role.objects.get(id=role_id)
+    context = {
+        'role':role,
+    }
+    return render(request, 'main/manage_uids.html', context)
+
 def get_error_types(request):
     mimetype = 'application/json'
     json_serializer = serializers.get_serializer("json")()
@@ -39,7 +45,7 @@ def get_error_types(request):
 
 def get_errors(request):
     mimetype = 'application/json'
-    json_serializer = serializers.get_serializer("json")()
+    #json_serializer = serializers.get_serializer("json")()
     errors = []
     for e in ErrorType.objects.all().filter(level=0):
         d = {}

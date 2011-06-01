@@ -3,7 +3,7 @@ from django.db.models import Q
 from django.contrib import admin
 
 from mptt.admin import MPTTModelAdmin
-from main.models import *
+from main.models import Project, ErrorType, Role, UIDStatus
 from main.forms import ProjectAdminForm
 
 from accounts.admin import ObjectPermissionInline, ObjectPermissionMixin
