@@ -81,7 +81,6 @@ class UIDForm(forms.Form):
         except:
             return None
         uid_status.completer = self.role
-        print self.date
         uid_status.date = self.date
         if commit:
             uid_status.save()

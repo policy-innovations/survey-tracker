@@ -32,8 +32,6 @@ def add_completed_entry(request, role_id):
         print request.POST
         d = request.POST.get('date').split('-')
         date = _date(year=int(d[0]), month=int(d[1]), day=int(d[2]))
-        print date
-        #date = request.POST.get('date', _date.today() - _timedelta(days=2))
         UIDFormset.form = staticmethod(curry(UIDForm, role, date))
         formset = UIDFormset(request.POST, request.FILES)
         if formset.is_valid():
