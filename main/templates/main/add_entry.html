@@ -4,12 +4,14 @@
     type="text/javascript">
 </script>
 <script type="text/javascript">
+    /*
     $(document).ready(function(){
+            var errors_select_html = new Array();
             var index = 0;
             var error_types = new Array();
             var error_list;
             if($("#survey_status").attr("checked")==true)
-                $("#errors").show();
+            $("#errors").show();
             $.getJSON('/get-error-types/', function(data){
                 error_list = data;
                 for(i=0; i<error_list.length;i++){
@@ -18,43 +20,48 @@
                 }
                 //alert(error_types);
                 $(".error_types").each(function(){
+                    errors_select_html.push($(this).html());
                     $(this).val(error_types[index].pk).change();
                     $(this).attr("disabled", "disabled");
                     index += 1;
                     });
                 });
             $("#survey_status").live('change', function(){
-                if($("#survey_status").attr("checked")==true)
+                    if($("#survey_status").attr("checked")==true)
                     $("#errors").show();
                     else
                     $("#errors").hide();
 
                     });
             $(".error_types").live('change', function(){
-                error_type = $(this);
-                $(".sub_errors").each(function(){
-                    if (String(jQuery(this).attr("form_id")) == String(
-                            error_type.get(0).id)) {
-                    $(this).remove();
+                    error_type = $(this);
+                    $(".sub_errors").each(function(){
+                        if (String(jQuery(this).attr("form_id")) == String(
+                                error_type.get(0).id)) {
+                        $(this).remove();
+                        }
+                        });
+                    sel_error = parseInt($(this).val());
+                    child_count = 0;
+                    if (isNaN(sel_error) == false) {
+                    var output = "&nbsp;&nbsp;"
+                    output += "<select class=\"sub_errors\" level=\"1\"";
+                    output += "id=\"id_sub_errors_1\" form_id=\"";
+                    output += jQuery(this).get(0).id + "\">";
+                    output += "<option value=\"\" selected=\"selected\">";
+                    output += "------------</option>";
+                    for (i = 0; i < error_list.length; i++) {
+                    if (error_list[i].fields.parent == sel_error) {
+                    output += "<option value=\"" + error_list[i].pk +
+                    "\">" + error_list[i].fields.name + "</option>";
+                    child_count += 1;
                     }
-                    });
-                sel_error = parseInt($(this).val());
-                if (isNaN(sel_error) == false) {
-                var output = "&nbsp;&nbsp;"
-                output += "<select class=\"sub_errors\" level=\"1\"";
-                output += "id=\"id_sub_errors_1\" form_id=\"";
-                output += jQuery(this).get(0).id + "\">";
-                output += "<option value=\"\" selected=\"selected\">";
-                output += "------------</option>";
-                for (i = 0; i < error_list.length; i++) {
-                if (error_list[i].fields.parent == sel_error) {
-                output += "<option value=\"" + error_list[i].pk +
-                "\">" + error_list[i].fields.name + "</option>";
-                }
-                }
-                output += "</select>&nbsp;&nbsp;";
-                $(output).insertAfter($(this));
-                }
+                    }
+                    output += "</select>&nbsp;&nbsp;";
+                    if (child_count > 0) {
+                        $(output).insertAfter($(this));
+                    }
+                    }
             });
             $(".sub_errors").live('change', function(){
                     sel_sub_error_form_id = $(this).attr("form_id");
@@ -89,19 +96,55 @@
                     }
                     }
             });
-
-    });
+            $("#entry_form").submit(function(e){
+                    //e.preventDefault();
+                    index = 0;
+                    var leaf_node = null;
+                    $(".error_types").each(function(){
+                        $(this).removeAttr('disabled');
+                        alert($(this).html());
+                        var error_type = $(this);
+                        var id = $(this).get(0).id;
+                        //alert(error_type.val())
+                        var current_level = 0;
+                        $(".sub_errors").each(function(){
+                            if (String($(this).attr("form_id")) == String(
+                                    error_type.get(0).id)) {
+                            if (parseInt($(this).attr('level'))>current_level){
+                            leaf_node = $(this);
+                            alert ('#'+String(id)+' option[value='+leaf_node.val()+']');
+                            $('#'+String(id)+' option[value='+leaf_node.val()+']').attr('selected', 'selected');
+                            current_level += 1;
+                            }
+                            }
+                            });
+                        if (leaf_node != null)
+                        //alert($(this).get(parseInt(leaf_node.val())));
+                        //$(this).html(errors_select_html[index]);
+                        //error_type.val(parseInt(sel_sub_error.val()));
+                        //alert(error_type.get(2).value);
+                        //alert($(this).html());
+                        index += 1;
+                    });
+                    $(".sub_errors").each(function(){
+                            $(this).remove();
+                            });
+                    alert($(this).html());
+                    return true;
+                    });
+});
+*/
 </script>
 {% endblock %}
 {% block content %}
-<form action="" method="post">
+<form action="" method="post" id="entry_form">
     {% csrf_token %}
     <table>
         {{ uid_form.as_table }}
     </table>
-    <input type="checkbox" id="survey_status"/>Incomplete<br/>
+    <!--<input type="checkbox" id="survey_status"/>Incomplete<br/> -->
     {{ formset.management_form }}
-    <table id="errors" style="display:none;">
+    <table id="errors" style="">
         {% for form in formset %}
         {{ form.as_table }}
         {% endfor %}
