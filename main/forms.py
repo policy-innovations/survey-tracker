@@ -1,6 +1,8 @@
 from django import forms
+from django.utils.translation import ugettext_lazy as _
 from django.db.models import Q
 
+from django.contrib.admin.widgets import FilteredSelectMultiple
 from mptt.forms import TreeNodeChoiceField
 from main.models import UIDStatus, Role, ErrorType, UIDError, Project
 
@@ -61,6 +63,7 @@ class UIDForm(forms.Form):
 
     def clean_uid(self):
         cleaned_data = self.cleaned_data
+<<<<<<< HEAD
         uid = cleaned_data["uid"]
         try:
             uid_status = UIDStatus.objects.get(uid=uid)
@@ -78,6 +81,25 @@ class UIDForm(forms.Form):
         if commit:
             uid_status.save()
         return uid_status
+=======
+        uid = cleaned_data.get("uid")
+        if not uid in 
+
+    '''
+>>>>>>> 976d624d5fde05ebb4e2d6d4b124f980f0669884
+
+class UIDAssignmentForm(forms.Form):
+    uids = forms.ModelMultipleChoiceField(queryset=Role.objects.all(),
+                                          label=_('Select UIDs'),
+                                          required=False,
+                                          widget=FilteredSelectMultiple(
+                                                    _('select UIDs'),
+                                                    True,
+                                                 ))
+
+    def __init__(self, role, *args, **kwargs):
+        super(UIDAssignmentForm, self).__init__(*args, **kwargs)
+        self.fields['uids'].queryset = role.managed_uids()
 
 class ProjectAdminForm(forms.ModelForm):
     hierarchy = forms.ModelChoiceField(queryset=Role.objects.filter(head__isnull=True))

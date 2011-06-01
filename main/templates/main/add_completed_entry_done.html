@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h3>Add completed survey</h3>
+All details have been saved successfully.<br/>
+<a href="{% url add-completed-entry role.id %}">Click here</a> to add
+more entries for same surveyor.<br/>
+<a href="{% url select-surveyor role.get_project.id %}">Click here</a> to add
+entries for different surveyor.<br/>
+<a href="/">Click here</a> to goto home page.
+{% endblock %}

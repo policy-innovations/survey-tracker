@@ -1,22 +1,22 @@
 {% extends 'base.html' %}
 
 {% block content %}
-{% if role.uidstatuses.all %}
-You managed following UIDs:</br>
-{% for uid in  role.uidstatuses.all %}
-{{ uid }}
-{% endfor %}
-<h3>Manage</h3>
-{% for sub in role.get_children %}
-<b><a href="{% url manage-sub-uids role.id sub.id %}">{{ sub }}</a></b></br>
-{% endfor %}
-{% else %}
-You and your subordinates have the responsiblity of following uids:
-<br/>
+<a href="/">Home</a> >
+<a href="{% url manage-uids role.id %}">Manage UIDs</a>
+
+<h3>You have responsibility for following UIDs:</h3>
 {% for uid in  role.uids %}
 {{ uid }}
 {% endfor %}
-{% endif %}
-<br/>
+<h3>Manage subordinate responsibilities:</h3>
+{% if manages %}<a href=''>Automatically distribute equally</a>{% endif %}
+<table>
+{% for sub in role.get_children %}
+<tr>
+    <td>{{ sub }}</td>
+    <td><a href="{% url manage-sub-uids role.id sub.id %}">Details</a></td>
+</tr>
+{% endfor %}
+<table>
 
 {% endblock %}

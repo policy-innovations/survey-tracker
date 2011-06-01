@@ -1,12 +1,20 @@
-from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render, get_object_or_404
+from django.http import HttpResponse, Http404
+from django.shortcuts import render, redirect
 from django.core import serializers
+from django.core.urlresolvers import reverse
 from django.forms.formsets import formset_factory
+#from django.utils.functional import curry
+
 from django.contrib.auth.decorators import login_required
+<<<<<<< HEAD
 from django.utils.functional import curry
 from django.utils import simplejson
 from django.core.urlresolvers import reverse
 from main.forms import ErrorForm, UIDForm
+=======
+
+from main.forms import UIDForm, UIDAssignmentForm
+>>>>>>> 976d624d5fde05ebb4e2d6d4b124f980f0669884
 from main.models import ErrorType, Role, Project, UIDStatus
 
 def home(request):
@@ -50,17 +58,44 @@ def add_completed_entry_done(request, role_id):
 @login_required
 def manage_uids(request, role_id):
     role = Role.objects.get(id=role_id)
+    if not request.user == role.user:
+        raise Http404
+
+    manages = role.managed_uids().count() > 0
+
     context = {
         'role':role,
+        'manages':manages,
     }
     return render(request, 'main/manage_uids.html', context)
 
 @login_required
 def manage_sub_uids(request, role_id, sub_role):
     role = Role.objects.get(id=role_id)
+    if not request.user == role.user:
+        raise Http404
+
+    subordinate = role.get_children().get(id=sub_role)
+    manages = role.managed_uids().count() > 0
+
+    if request.method=='POST':
+        form = UIDAssignmentForm(role, request.POST)
+        if form.is_valid():
+            return redirect(reverse('manage-sub-uids', kwargs={
+                    'role_id':role_id,
+                    'sub_role':sub_role,
+                }))
+    else:
+        form = UIDAssignmentForm(role,
+                                 initial={
+                                    'uids':subordinate.uidstatuses.all(),
+                                 })
 
     context = {
         'role':role,
+        'sub':subordinate,
+        'form':form,
+        'manages':manages,
     }
     return render(request, 'main/manage_sub_uids.html', context)
 
