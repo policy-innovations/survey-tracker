@@ -53,9 +53,19 @@ class ErrorForm(forms.ModelForm):
 
 # This is yet to be completed
 class UIDForm(forms.Form):
-    completer = forms.ModelChoiceField(queryset=Role.objects.all())
-    #error_types = forms.ModelChoiceField(queryset=ErrorType.objects.all())
+    uid = forms.CharField(label="UID")
+    '''
+    def __init__(self, role, *args, **kwargs):
+        super(self.__class__, self).__init__(*args, **kwargs)
+        self.fields['uid'].queryset = role.uids()
 
+    def clean(self):
+        cleaned_data = self.cleaned_data
+        uid = cleaned_data.get("uid")
+
+        if not uid in 
+
+    '''
 
 class ProjectAdminForm(forms.ModelForm):
     hierarchy = forms.ModelChoiceField(queryset=Role.objects.filter(head__isnull=True))
