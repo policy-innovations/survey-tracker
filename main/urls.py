@@ -9,6 +9,8 @@ urlpatterns = patterns('',
         name = 'add-completed-entry'),
     url(r'^manage-uids/(?P<role_id>\d+)/$', 'main.views.manage_uids',
         name = 'manage-uids'),
+    url(r'^manage-uids/(?P<role_id>\d+)/subordinate/(?P<sub_role>\d+)/$',
+        'main.views.manage_sub_uids', name = 'manage-sub-uids'),
     url(r'^get-error-types/$', 'main.views.get_error_types',
         name = 'get_error_types'),
 )
