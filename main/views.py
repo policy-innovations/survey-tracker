@@ -37,8 +37,7 @@ def add_completed_entry(request, role_id):
         if formset.is_valid():
             for form in formset:
                 form.save()
-            return HttpResponseRedirect(reverse('add-completed-entry-done',
-                kwargs={'role_id':role.id}))
+            return HttpResponseRedirect(reverse('/')
         else:
             return render(request, 'main/add_completed_entry.html',
                     {'formset':formset, 'date':date})
