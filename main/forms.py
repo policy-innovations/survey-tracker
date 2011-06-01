@@ -43,7 +43,6 @@ class ErrorForm(forms.ModelForm):
             q = Q(lft__gte=et.lft, rght__lte=et.rght)
             query |= q
         self.fields['etype'].queryset = ErrorType.objects.filter(query).order_by('level')
-        #self.fields['etype'].queryset = err_type.get_descendants(include_self=True)
 
     def clean_etype(self):
         et = self.cleaned_data['etype']
