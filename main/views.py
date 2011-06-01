@@ -1,10 +1,9 @@
-from django.http import HttpResponse
-from django.shortcuts import render, get_object_or_404
+from django.http import HttpResponse, Http404
+from django.shortcuts import render
 from django.core import serializers
 from django.forms.formsets import formset_factory
 from django.contrib.auth.decorators import login_required
 from django.utils.functional import curry
-from django.utils import simplejson
 from main.forms import ErrorForm, UIDForm
 from main.models import ErrorType, Role, Project
 
@@ -33,11 +32,14 @@ def add_entry(request, role_id):
         formset = ErrorFormset()
         uid_form = UIDForm()
         return render(request, 'main/add_entry.html', {'uid_form':uid_form,
-            'formset':formset})
+                      'formset':formset})
 
 @login_required
 def manage_uids(request, role_id):
     role = Role.objects.get(id=role_id)
+    if not request.user == role.user:
+        raise Http404
+
     context = {
         'role':role,
     }
@@ -46,9 +48,14 @@ def manage_uids(request, role_id):
 @login_required
 def manage_sub_uids(request, role_id, sub_role):
     role = Role.objects.get(id=role_id)
+    if not request.user == role.user:
+        raise Http404
+
+    subordinate = role.get_children().get(id=sub_role)
 
     context = {
         'role':role,
+        'subordinate':subordinate,
     }
     return render(request, 'main/manage_sub_uids.html', context)
 
