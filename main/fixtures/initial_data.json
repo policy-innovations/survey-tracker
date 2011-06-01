@@ -221,6 +221,7 @@
     "fields": {
       "project": 1,
       "completer": null,
+      "date":null,
       "role": 8,
       "uid": "012321"
     }
@@ -231,6 +232,7 @@
     "fields": {
       "project": 1,
       "completer": null,
+    "date":null,
       "role": 5,
       "uid": "123213"
     }
@@ -241,6 +243,7 @@
     "fields": {
       "project": 1,
       "completer": null,
+      "date":null,
       "role": null,
       "uid": "22341324"
     }
