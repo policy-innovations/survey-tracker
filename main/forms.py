@@ -56,11 +56,10 @@ class ErrorForm(forms.ModelForm):
 # This is yet to be completed
 class UIDForm(forms.Form):
     uid = forms.CharField(label="UID", required=True)
-    date = forms.DateField(label="Date of completion", required=True,
-            initial=date.today()-timedelta(days=2))
 
-    def __init__(self, role, *args, **kwargs):
+    def __init__(self, role, date, *args, **kwargs):
         self.role = role
+        self.date = date
         super(UIDForm, self).__init__(*args, **kwargs)
 
     def clean_uid(self):
@@ -82,7 +81,8 @@ class UIDForm(forms.Form):
         except:
             return None
         uid_status.completer = self.role
-        uid_status.date = self.cleaned_data['date']
+        print self.date
+        uid_status.date = self.date
         if commit:
             uid_status.save()
         return uid_status

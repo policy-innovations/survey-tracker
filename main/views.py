@@ -7,6 +7,8 @@ from django.contrib.auth.decorators import login_required
 from django.utils.functional import curry
 from django.utils import simplejson
 from django.core.urlresolvers import reverse
+from datetime import date as _date
+from datetime import timedelta as _timedelta
 from main.forms import ErrorForm, UIDForm, UIDAssignmentForm
 from main.models import ErrorType, Role, Project, UIDStatus
 
@@ -26,21 +28,28 @@ def select_surveyor(request, proj_pk):
 def add_completed_entry(request, role_id):
     role = Role.objects.get(id=role_id)
     UIDFormset = formset_factory(UIDForm)
-    UIDFormset.form = staticmethod(curry(UIDForm, role))
     if request.method == 'POST':
+        print request.POST
+        d = request.POST.get('date').split('-')
+        date = _date(year=int(d[0]), month=int(d[1]), day=int(d[2]))
+        print date
+        #date = request.POST.get('date', _date.today() - _timedelta(days=2))
+        UIDFormset.form = staticmethod(curry(UIDForm, role, date))
         formset = UIDFormset(request.POST, request.FILES)
         if formset.is_valid():
             for form in formset:
                 form.save()
             return HttpResponseRedirect(reverse('add-completed-entry-done',
-                kwargs={'role_id':role.id,}))
+                kwargs={'role_id':role.id}))
         else:
             return render(request, 'main/add_completed_entry.html',
-                    {'formset':formset})
+                    {'formset':formset, 'date':date})
     else:
+        date = _date.today() - _timedelta(days=2)
+        UIDFormset.form = staticmethod(curry(UIDForm, role, date))
         formset = UIDFormset()
         return render(request, 'main/add_completed_entry.html',
-                {'formset':formset})
+                {'formset':formset, 'date':date})
 
 @login_required
 def add_completed_entry_done(request, role_id):
