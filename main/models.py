@@ -1,5 +1,4 @@
 from django.db import models
-from django.db.models import Q, Count
 from django.utils.translation import ugettext_lazy as _
 
 from django.contrib.auth.models import User
@@ -186,3 +185,6 @@ def create_base_role_tree():
     r21 = create_role('G', r2)
     r211 = create_role('J', r21)
     r212 = create_role('K', r21)
+    print r1, r11, r111
+    print r12, r13, r131
+    print r2, r21, r211, r212

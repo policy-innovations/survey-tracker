@@ -1,8 +1,8 @@
 from django import forms
-from django.db.models import Q, F
+from django.db.models import Q
 
 from mptt.forms import TreeNodeChoiceField
-from main.models import *
+from main.models import UIDStatus, Role, ErrorType, UIDError, Project
 
 class UIDStatusForm(forms.ModelForm):
     class Meta:
@@ -66,4 +66,4 @@ class ProjectAdminForm(forms.ModelForm):
         model=Project
 
     def __init__(self, *args, **kwargs):
-        form = super(ProjectAdminForm, self).__init__(*args, **kwargs)
+        super(ProjectAdminForm, self).__init__(*args, **kwargs)
