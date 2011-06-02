@@ -167,12 +167,15 @@ def get_dummy_user(username):
         user.save()
     return user
 
-def create_role(name, head=None):
-    user = get_dummy_user(name)
+def create_role(name, head=None, username=None):
+    if username:
+        user = get_dummy_user(username)
+    else:
+        user = get_dummy_user(name)
     return Role.objects.create(name=name, user=user, head=head)
 
 def create_base_role_tree():
-    superhead = create_role('A')
+    superhead = create_role('A', username='test')
 
     r1 = create_role('B', superhead)
     r11 = create_role('D', r1)
@@ -191,6 +194,7 @@ def create_base_role_tree():
     project.hierarchy = superhead
     project.save()
 
+    print superhead
     print r1, r11, r111
     print r12, r13, r131
     print r2, r21, r211, r212
