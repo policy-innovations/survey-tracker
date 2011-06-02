@@ -56,8 +56,8 @@ def add_completed_entry_done(request, role_id):
 @login_required
 def add_uncompleted_entry(request, role_id):
     role = Role.objects.get(id=role_id)
-    ErrorFormset = formset_factory(ErrorForm,
-            extra=len(ErrorType.objects.all().filter(level=0)))
+    ErrorFormset = formset_factory(ErrorForm, extra=1,
+            max_num = len(ErrorType.objects.all().filter(level=0)))
     ErrorFormset.form = staticmethod(curry(ErrorForm, role))
     if request.method == 'POST':
         d = request.POST.get('date').split('-')

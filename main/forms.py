@@ -34,12 +34,19 @@ class ErrorForm(forms.ModelForm):
 
     def clean_etype(self):
         #et = ErrorType.objects.get(pk=int(self.cleaned_data['etype']))
-        et = self.cleaned_data['etype']
+        cleaned_data = self.cleaned_data
+        try:
+            et = cleaned_data['etype']
+        except:
+            return None
+
         if et.is_leaf_node():
             return self.cleaned_data['etype']
         else:
             raise forms.ValidationError("A leaf node is required.")
     def save(self, force_insert=False, force_update=False, commit=True):
+        if self.clean_etype() is None:
+            return None
         m = super(ErrorForm, self).save(commit=False)
         m.uid_status = self.uid_status
         if commit:
@@ -47,7 +54,8 @@ class ErrorForm(forms.ModelForm):
         return m
 
 class UIDForm(forms.Form):
-    uid = forms.CharField(label="UID", required=True)
+    uid = forms.CharField(label="UID", required=True, widget=forms.TextInput(
+        attrs={'id':'uid'}))
 
     def __init__(self, role, date, *args, **kwargs):
         self.role = role
