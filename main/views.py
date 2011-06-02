@@ -57,27 +57,32 @@ def add_completed_entry_done(request, role_id):
 @login_required
 def add_uncompleted_entry(request, role_id):
     role = Role.objects.get(id=role_id)
-    UIDFormset = formset_factory(UIDForm)
     if request.method == 'POST':
         print request.POST
         d = request.POST.get('date').split('-')
         date = _date(year=int(d[0]), month=int(d[1]), day=int(d[2]))
-        UIDFormset.form = staticmethod(curry(UIDForm, role, date))
-        formset = UIDFormset(request.POST, request.FILES)
-        if formset.is_valid():
-            for form in formset:
-                form.save()
+        uid_form = UIDForm(role, date, request.POST, request.FILES)
+        error_form = ErrorForm(role, request.POST, request.FILES)
+
+        if uid_form.is_valid():
+            uid_form.save()
+        else:
+            return render(request, 'main/add_uncompleted_entry.html',
+                    {'uid_form':form, 'error_form':error_form, 'date':date})
+
+        if uid_form.is_valid():
+            uid_form.save()
             return HttpResponseRedirect(reverse('add-uncompleted-entry-done',
                 kwargs={'role_id':role.id}))
         else:
-            return render(request, 'main/add_completed_entry.html',
-                    {'formset':formset, 'date':date})
+            return render(request, 'main/add_uncompleted_entry.html',
+                    {'uid_form':form, 'error_form':error_form, 'date':date})
     else:
         date = _date.today() - _timedelta(days=2)
-        UIDFormset.form = staticmethod(curry(UIDForm, role, date))
-        formset = UIDFormset()
-        return render(request, 'main/add_completed_entry.html',
-                {'formset':formset, 'date':date})
+        uid_form = UIDForm(role, date)
+        error_form = ErrorForm(role)
+        return render(request, 'main/add_uncompleted_entry.html',
+                {'uid_form':uid_form, 'error_form':error_form, 'date':date})
 
 @login_required
 def add_uncompleted_entry_done(request, role_id):

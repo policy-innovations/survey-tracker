@@ -4,47 +4,21 @@
     type="text/javascript"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js"
     type="text/javascript"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}js/add_form.js"></script>
 <script type="text/javascript">
     $(document).ready(function(){
-            $('.add-row').click(function(){
-                return addForm(this, 'form');
-                });
-            $('.delete-row').click(function(){
-                return deleteForm(this, 'form');
-                });
             $('#date').datepicker({dateFormat:'yy-mm-dd', inline:true});
             });
 </script>
 <link rel='stylesheet' href="{{ STATIC_URL }}css/jquery-ui-1.8.13.custom.css" type = "text/css"/>
 {% endblock %}
 {% block content %}
-<h3>Add Completed Surveys</h3>
+<h3>Add Uncompleted Surveys</h3>
 <form action="" method="post" id="entry_form">
     Date of completion <input type="text" name="date" value="{{ date|date:"Y-m-j" }}" id="date">
     <br/><br/>
-    {{ formset.management_form }}
     <table id="errors" style="">
-        {{ formset.non_form_errors.as_ul }}
-        {% for form in formset %}
-        <tr class="{% cycle row1,row2 %} no-border dynamic-form">
-            {% for field in form.visible_fields %}
-            <td>{{ field.label }}</td>
-            <td>
-                {# Include the hidden fields in the form #}
-                {% if forloop.first %}
-                {% for hidden in form.hidden_fields %}
-                {{ hidden }}
-                {% endfor %}
-                {% endif %}
-                {{ field.errors.as_ul }}
-                {{ field }}
-            </td>
-            {% endfor %}
-            <td><a id="remove-{{ form.prefix }}-row" href="javascript:void(0)" class="delete-row"><img src="{{ STATIC_URL }}admin/img/admin/icon_deletelink.gif" title="Remove this form"/></a></td>
-        </tr>
-        {% endfor %}
-        <tr class='no-border'><td ><a href="javascript:void(0)" class="add-row"><img src="{{ STATIC_URL }}admin/img/admin/icon_addlink.gif" title="Add another form"/></a></td></tr>
+        {{ uid_form.as_table }}
+        {{ error_form.as_table }}
         <tr class="no-border"><td><input type="submit" value="Submit" /></td><td>{% csrf_token %}</td></tr>
     </table>
 </form>
