@@ -13,7 +13,7 @@ class ErrorForm(forms.ModelForm):
     Call it via ajax for error.
 
     '''
-    etype = TreeNodeChoiceField(label=_('Select Error Type'), initial=0, queryset=ErrorType.objects.all(),
+    etype = TreeNodeChoiceField(label=_('Select Error Type'), initial='', queryset=ErrorType.objects.all(),
             widget=forms.HiddenInput(attrs={'class':'error_types'}))
 
     class Meta:

@@ -18,7 +18,8 @@
                }
 
                $(".error_types").each(function(){
-                   $(this).val(error_types[index].pk);
+                   $(this).val('null');
+                   $(this).attr('error_name',error_types[index].fields.name)
                    var output1 = '';
                    output1 += '<strong>'+error_types[index].fields.name + '</strong>&nbsp;&nbsp';
                    var output = '';
@@ -38,8 +39,10 @@
                    output += "</select>&nbsp;&nbsp;";
                    if (child_count > 0)
                    $('<td>' + output1 + output + '</td>').insertBefore($(this).parent());
-                   else
+                   else {
                        $('<td>'+output1+'</td>').insertBefore($(this).parent());
+                       $(this).val(error_types[index].pk);
+                   }
                    index += 1;
                    });
 
@@ -77,10 +80,23 @@
                        }
                        output += "</select>&nbsp;&nbsp;";
                        if (child_count > 0) {
+                           $(this).val("null");
                            $(output).insertAfter($(this));
                        }
                        }
                });
+               $("#entry_form").submit(function(e){
+                       e.preventDefault();
+                       var form_errors_count = 0;
+                       $('.error_types').each(function(){
+                           if ($(this).val()=="null"){
+                           alert('Please select sub errors for "' + $(this).attr('error_name') + '".');
+                           form_errors_count += 0;
+                           }
+                           })
+                       if (form_errors_count==0)
+                       e.trigger();
+                       });
     });
 </script>
 <link rel='stylesheet' href="{{ STATIC_URL }}css/jquery-ui-1.8.13.custom.css" type = "text/css"/>
@@ -116,7 +132,7 @@
             </td>
             {% endfor %}
             {% endfor %}
-            <tr class="no-border"><td><input type="submit" value="Submit" /></td><td>{% csrf_token %}</td></tr>
+            <tr class="no-border"><td><input type="submit" value="Submit" id="submit"/></td><td>{% csrf_token %}</td></tr>
         </table>
     </form>
     {% endblock %}

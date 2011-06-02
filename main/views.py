@@ -58,10 +58,12 @@ def add_uncompleted_entry(request, role_id):
     role = Role.objects.get(id=role_id)
     ErrorFormset = formset_factory(ErrorForm,
             extra=len(ErrorType.objects.all().filter(level=0)))
+    ErrorFormset.form = staticmethod(curry(ErrorForm, role))
     if request.method == 'POST':
         d = request.POST.get('date').split('-')
         date = _date(year=int(d[0]), month=int(d[1]), day=int(d[2]))
         uid_form = UIDForm(role, date, request.POST, request.FILES)
+        error_formset = ErrorFormset()
 
         if uid_form.is_valid():
             uid_status = uid_form.save()
@@ -82,7 +84,6 @@ def add_uncompleted_entry(request, role_id):
                     {'uid_form':uid_form, 'error_formset':error_formset,
                         'date':date, 'role':role})
     else:
-        ErrorFormset.form = staticmethod(curry(ErrorForm, role))
         date = _date.today() - _timedelta(days=2)
         uid_form = UIDForm(role, date)
         error_formset = ErrorFormset()
