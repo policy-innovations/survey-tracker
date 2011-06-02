@@ -13,15 +13,15 @@ class ErrorForm(forms.ModelForm):
     Call it via ajax for error.
 
     '''
-    etype = TreeNodeChoiceField(queryset=ErrorType.objects.all(),
+    etype = TreeNodeChoiceField(label=_('Select Error Type'), queryset=ErrorType.objects.all(),
             widget=forms.Select(attrs={'class':'error_types'}))
 
     class Meta:
         model = UIDError
+        exclude = ('uid_status', )
 
     def __init__(self, role, *args, **kwargs):
         super(ErrorForm, self).__init__(*args, **kwargs)
-        self.fields['uid_status'].queryset = role.uids()
         project = role.get_project()
         query = Q()
         # This generates a query which filters trees from error type

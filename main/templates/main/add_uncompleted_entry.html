@@ -14,11 +14,34 @@
 {% block content %}
 <h3>Add Uncompleted Surveys</h3>
 <form action="" method="post" id="entry_form">
-    Date of completion <input type="text" name="date" value="{{ date|date:"Y-m-j" }}" id="date">
-    <br/><br/>
-    <table id="errors" style="">
+    {{ error_formset.management_form }}
+    <table>
+        <tr>
+            <th>Name of Surveyor:</th>
+            <td>{{ role.name }}</td>
+        </tr>
+        <tr>
+            <th>Date of completion:</th>
+            <td><input type="text" name="date" value="{{ date|date:"Y-m-j" }}" id="date"></td>
+        </tr>
         {{ uid_form.as_table }}
-        {{ error_form.as_table }}
+        {{ error_formset.non_form_errors.as_ul }}
+        {% for form in error_formset %}
+        <tr>
+            {% for field in form.visible_fields %}
+            <th>{{ field.label }}:</th>
+            <td>
+                {# Include the hidden fields in the form #}
+                {% if forloop.first %}
+                {% for hidden in form.hidden_fields %}
+                {{ hidden }}
+                {% endfor %}
+                {% endif %}
+                {{ field.errors.as_ul }}
+                {{ field }}
+            </td>
+            {% endfor %}
+        {% endfor %}
         <tr class="no-border"><td><input type="submit" value="Submit" /></td><td>{% csrf_token %}</td></tr>
     </table>
 </form>

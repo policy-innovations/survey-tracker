@@ -154,9 +154,9 @@ class UIDError(models.Model):
     '''
     etype = models.ForeignKey(ErrorType)
     uid_status = models.ForeignKey(UIDStatus)
-    details = models.TextField(_('details'), blank=True,
-                               help_text="enter extra details which  will\
-                               let the error make sense.") #Revise this
+    details = models.TextField(_('error details'), blank=True,
+                               help_text="enter extra details just in case\
+                               useful.") #Revise this
 
 #For quick creation of fixtures.
 

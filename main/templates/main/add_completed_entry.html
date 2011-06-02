@@ -19,17 +19,23 @@
 <link rel='stylesheet' href="{{ STATIC_URL }}css/jquery-ui-1.8.13.custom.css" type = "text/css"/>
 {% endblock %}
 {% block content %}
-<h3>Add Uncompleted Surveys</h3>
+<h3>Add Completed Surveys</h3>
 <form action="" method="post" id="entry_form">
-    Date of completion <input type="text" name="date" value="{{ date|date:"Y-m-j" }}" id="date">
-    <br/><br/>
     {{ formset.management_form }}
-    <table id="errors" style="">
+    <table>
+        <tr>
+            <th>Name of Surveyor:</th>
+            <td>{{ role.name }}</td>
+        </tr>
+        <tr>
+            <th>Date of completion:</th>
+            <td><input type="text" name="date" value="{{ date|date:"Y-m-j" }}" id="date"></td>
+        </tr>
         {{ formset.non_form_errors.as_ul }}
         {% for form in formset %}
         <tr class="{% cycle row1,row2 %} no-border dynamic-form">
             {% for field in form.visible_fields %}
-            <td>{{ field.label }}</td>
+            <th>{{ field.label }}:</th>
             <td>
                 {# Include the hidden fields in the form #}
                 {% if forloop.first %}

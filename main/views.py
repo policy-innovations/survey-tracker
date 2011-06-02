@@ -27,9 +27,8 @@ def select_surveyor(request, proj_pk):
 @login_required
 def add_completed_entry(request, role_id):
     role = Role.objects.get(id=role_id)
-    UIDFormset = formset_factory(UIDForm)
+    UIDFormset = formset_factory(UIDForm, extra=10)
     if request.method == 'POST':
-        print request.POST
         d = request.POST.get('date').split('-')
         date = _date(year=int(d[0]), month=int(d[1]), day=int(d[2]))
         UIDFormset.form = staticmethod(curry(UIDForm, role, date))
@@ -41,13 +40,13 @@ def add_completed_entry(request, role_id):
                 kwargs={'role_id':role.id}))
         else:
             return render(request, 'main/add_completed_entry.html',
-                    {'formset':formset, 'date':date})
+                    {'formset':formset, 'date':date, 'role':role})
     else:
         date = _date.today() - _timedelta(days=2)
         UIDFormset.form = staticmethod(curry(UIDForm, role, date))
         formset = UIDFormset()
         return render(request, 'main/add_completed_entry.html',
-                {'formset':formset, 'date':date})
+                {'formset':formset, 'date':date, 'role':role})
 
 @login_required
 def add_completed_entry_done(request, role_id):
@@ -57,18 +56,21 @@ def add_completed_entry_done(request, role_id):
 @login_required
 def add_uncompleted_entry(request, role_id):
     role = Role.objects.get(id=role_id)
+    ErrorFormset = formset_factory(ErrorForm,
+            extra=len(ErrorType.objects.all().filter(level=0)))
+    ErrorFormset.form = staticmethod(curry(ErrorForm, role))
     if request.method == 'POST':
-        print request.POST
         d = request.POST.get('date').split('-')
         date = _date(year=int(d[0]), month=int(d[1]), day=int(d[2]))
         uid_form = UIDForm(role, date, request.POST, request.FILES)
-        error_form = ErrorForm(role, request.POST, request.FILES)
+        error_formset = ErrorFormset(request.POST, request.FILES)
 
         if uid_form.is_valid():
             uid_form.save()
         else:
             return render(request, 'main/add_uncompleted_entry.html',
-                    {'uid_form':form, 'error_form':error_form, 'date':date})
+                    {'uid_form':uid_form, 'error_formset':error_formset,
+                        'date':date, 'role':role})
 
         if uid_form.is_valid():
             uid_form.save()
@@ -76,13 +78,15 @@ def add_uncompleted_entry(request, role_id):
                 kwargs={'role_id':role.id}))
         else:
             return render(request, 'main/add_uncompleted_entry.html',
-                    {'uid_form':form, 'error_form':error_form, 'date':date})
+                    {'uid_form':uid_form, 'error_formset':error_formset,
+                        'date':date, 'role':role})
     else:
         date = _date.today() - _timedelta(days=2)
         uid_form = UIDForm(role, date)
-        error_form = ErrorForm(role)
+        error_formset = ErrorFormset()
         return render(request, 'main/add_uncompleted_entry.html',
-                {'uid_form':uid_form, 'error_form':error_form, 'date':date})
+                {'uid_form':uid_form, 'error_formset':error_formset,
+                    'date':date, 'role':role})
 
 @login_required
 def add_uncompleted_entry_done(request, role_id):
