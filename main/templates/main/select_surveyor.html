@@ -6,7 +6,8 @@
     {% for surveyor in surveyors %}
     <tr>
         <td>{{ surveyor.name }}</td>
-        <td><a href="{% url add-completed-entry surveyor.id %}">Add Completeed Survey</a></td>
+        <td><a href="{% url add-completed-entry surveyor.id %}">Add Completed Survey</a></td>
+        <td><a href="{% url add-uncompleted-entry surveyor.id %}">Add Uncompleted Survey</a></td>
     </tr>
     {% endfor %}
 </table>

@@ -6,21 +6,6 @@ from django.contrib.admin.widgets import FilteredSelectMultiple
 from mptt.forms import TreeNodeChoiceField
 from main.models import UIDStatus, Role, ErrorType, UIDError, Project
 
-class UIDStatusForm(forms.ModelForm):
-    class Meta:
-        model = UIDStatus
-        exclude = ('errors', 'role', 'project')
-
-class UIDErrorForm(forms.ModelForm):
-    choices = [('','-----------'),]
-    for e in ErrorType.objects.all().filter(level=0):
-        choices.append((str(e.pk), e.name))
-    etype = forms.ChoiceField(label="Errors", widget=forms.Select(attrs={
-        'class':'error_types'}), choices=choices)
-    class Meta:
-        model = UIDError
-        exclude = ('uid_status',)
-
 class ErrorForm(forms.ModelForm):
     '''
     This is an error form which is to be filled in for associating errors
@@ -53,7 +38,6 @@ class ErrorForm(forms.ModelForm):
         else:
             raise forms.ValidationError("A leaf node is required.")
 
-# This is yet to be completed
 class UIDForm(forms.Form):
     uid = forms.CharField(label="UID", required=True)
 
