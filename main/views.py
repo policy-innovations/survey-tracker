@@ -58,22 +58,23 @@ def add_uncompleted_entry(request, role_id):
     role = Role.objects.get(id=role_id)
     ErrorFormset = formset_factory(ErrorForm,
             extra=len(ErrorType.objects.all().filter(level=0)))
-    ErrorFormset.form = staticmethod(curry(ErrorForm, role))
     if request.method == 'POST':
         d = request.POST.get('date').split('-')
         date = _date(year=int(d[0]), month=int(d[1]), day=int(d[2]))
         uid_form = UIDForm(role, date, request.POST, request.FILES)
-        error_formset = ErrorFormset(request.POST, request.FILES)
 
         if uid_form.is_valid():
-            uid_form.save()
+            uid_status = uid_form.save()
         else:
             return render(request, 'main/add_uncompleted_entry.html',
                     {'uid_form':uid_form, 'error_formset':error_formset,
                         'date':date, 'role':role})
 
-        if uid_form.is_valid():
-            uid_form.save()
+        ErrorFormset.form = staticmethod(curry(ErrorForm, role, uid_status))
+        error_formset = ErrorFormset(request.POST, request.FILES)
+        if error_formset.is_valid():
+            for form in error_formset:
+                form.save()
             return HttpResponseRedirect(reverse('add-uncompleted-entry-done',
                 kwargs={'role_id':role.id}))
         else:
@@ -81,6 +82,7 @@ def add_uncompleted_entry(request, role_id):
                     {'uid_form':uid_form, 'error_formset':error_formset,
                         'date':date, 'role':role})
     else:
+        ErrorFormset.form = staticmethod(curry(ErrorForm, role))
         date = _date.today() - _timedelta(days=2)
         uid_form = UIDForm(role, date)
         error_formset = ErrorFormset()
@@ -91,7 +93,7 @@ def add_uncompleted_entry(request, role_id):
 @login_required
 def add_uncompleted_entry_done(request, role_id):
     role = Role.objects.get(id=role_id)
-    return render(request, 'main/add_completed_entry_done.html', {'role':role})
+    return render(request, 'main/add_uncompleted_entry_done.html', {'role':role})
 
 @login_required
 def manage_uids(request, role_id):

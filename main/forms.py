@@ -13,15 +13,16 @@ class ErrorForm(forms.ModelForm):
     Call it via ajax for error.
 
     '''
-    etype = TreeNodeChoiceField(label=_('Select Error Type'), queryset=ErrorType.objects.all(),
-            widget=forms.Select(attrs={'class':'error_types'}))
+    etype = TreeNodeChoiceField(label=_('Select Error Type'), initial=0, queryset=ErrorType.objects.all(),
+            widget=forms.HiddenInput(attrs={'class':'error_types'}))
 
     class Meta:
         model = UIDError
         exclude = ('uid_status', )
 
-    def __init__(self, role, *args, **kwargs):
+    def __init__(self, role,uid_status=None, *args, **kwargs):
         super(ErrorForm, self).__init__(*args, **kwargs)
+        self.uid_status = uid_status
         project = role.get_project()
         query = Q()
         # This generates a query which filters trees from error type
@@ -32,11 +33,18 @@ class ErrorForm(forms.ModelForm):
         self.fields['etype'].queryset = ErrorType.objects.filter(query).order_by('level')
 
     def clean_etype(self):
+        #et = ErrorType.objects.get(pk=int(self.cleaned_data['etype']))
         et = self.cleaned_data['etype']
         if et.is_leaf_node():
             return self.cleaned_data['etype']
         else:
             raise forms.ValidationError("A leaf node is required.")
+    def save(self, force_insert=False, force_update=False, commit=True):
+        m = super(ErrorForm, self).save(commit=False)
+        m.uid_status = self.uid_status
+        if commit:
+            m.save()
+        return m
 
 class UIDForm(forms.Form):
     uid = forms.CharField(label="UID", required=True)
