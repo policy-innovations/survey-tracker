@@ -33,12 +33,11 @@ class ErrorForm(forms.ModelForm):
         self.fields['etype'].queryset = ErrorType.objects.filter(query).order_by('level')
 
     def clean_etype(self):
-        #et = ErrorType.objects.get(pk=int(self.cleaned_data['etype']))
         cleaned_data = self.cleaned_data
         try:
             et = cleaned_data['etype']
         except:
-            return None
+            return None #If form is empty in formset, "None" is returned.
 
         if et.is_leaf_node():
             return self.cleaned_data['etype']
@@ -54,11 +53,18 @@ class ErrorForm(forms.ModelForm):
         return m
 
 class UIDForm(forms.Form):
+    '''
+    This form should be used for adding status of uid. Extra date field is
+    required.
+    '''
     uid = forms.CharField(label="UID", required=True, widget=forms.TextInput(
         attrs={'id':'uid'}))
 
     def __init__(self, role, date, *args, **kwargs):
-        self.role = role
+        '''
+        "date" and "role" will be used while saving the form.
+        '''
+        self.role = role 
         self.date = date
         super(UIDForm, self).__init__(*args, **kwargs)
 
