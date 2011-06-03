@@ -10,15 +10,15 @@ from django.core.urlresolvers import reverse
 from datetime import date as _date
 from datetime import timedelta as _timedelta
 from main.forms import ErrorForm, UIDForm, UIDAssignmentForm
-from main.models import ErrorType, Role, Project, UIDStatus
+from main.models import ErrorType, Role, Questionnaire, UIDStatus
 
 def home(request):
     return render(request, 'main/home.html',)
 
 @login_required
 def select_surveyor(request, proj_pk):
-    project = Project.objects.get(pk=proj_pk)
-    role = project.hierarchy.get_descendants(include_self=True).get(
+    questionnaire = Questionnaire.objects.get(pk=proj_pk)
+    role = questionnaire.hierarchy.get_descendants(include_self=True).get(
             user=request.user)
     surveyors = role.get_leafnodes()
     return render(request, 'main/select_surveyor.html',

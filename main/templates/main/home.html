@@ -2,8 +2,8 @@
 
 {% block content %}
 {% for role in user.role_set.all %}
-<h3>{{ role.get_project }}</h3>
-    <a href="{% url select-surveyor role.get_project.id %}">Add Entry</a><br/>
+<h3>{{ role.get_questionnaire }}</h3>
+    <a href="{% url select-surveyor role.get_questionnaire.id %}">Add Entry</a><br/>
     <a href="{% url manage-uids role.id %}">Manage UIDs</a>
 {% endfor %}
 {% endblock %}

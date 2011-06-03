@@ -60,14 +60,14 @@ class Role(MPTTModel):
     def __unicode__(self):
         return self.name.title()
 
-    def get_project(self):
-        return self.get_root().project
-    get_project.short_description = _('project')
+    def get_questionnaire(self):
+        return self.get_root().questionnaire
+    get_questionnaire.short_description = _('questionnaire')
 
     def managed_uids(self):
-        project_uids = self.get_project().uidstatus_set.all()
+        questionnaire_uids = self.get_questionnaire().uidstatus_set.all()
         query = Q(role__in=self.get_descendants(include_self=True))
-        return project_uids.filter(query)
+        return questionnaire_uids.filter(query)
 
     def uids(self):
         '''
@@ -82,7 +82,7 @@ class Role(MPTTModel):
 
         Eg:
         Let this be the tree:
-        Project: 300
+        Questionnaire: 300
         A
           B (200)
             D
@@ -100,26 +100,26 @@ class Role(MPTTModel):
         The rest will be open for distribution and under everybody's
         (except B subtree's) responsibility.
         '''
-        project = self.get_project()
-        project_uids = project.uidstatus_set.all()
+        questionnaire = self.get_questionnaire()
+        questionnaire_uids = questionnaire.uidstatus_set.all()
 
         ancestors = self.get_ancestors(include_self=True)
         assigned_ancestors = ancestors.filter(uidstatuses__isnull=False)
         if assigned_ancestors:
             return assigned_ancestors.latest('level').uidstatuses.all()
 
-        return project_uids.filter(role__isnull=True)
+        return questionnaire_uids.filter(role__isnull=True)
 
     uids.short_description = _('UID Statuses')
 
-class Project(models.Model):
+class Questionnaire(models.Model):
     name = models.CharField(_('name'), max_length=100)
     users = models.ManyToManyField(User, blank=True)
     # This stores the topmost node of the tree whole children form the
     # hierarchy
     hierarchy = models.OneToOneField(Role, blank=True, null=True,
-                                     related_name='project')
-    # Tree heads of errors which can occur in the project
+                                     related_name='questionnaire')
+    # Tree heads of errors which can occur in the questionnaire
     error_types = models.ManyToManyField(ErrorType, blank=True, null=True)
 
     def __unicode__(self):
@@ -138,7 +138,7 @@ class UIDStatus(models.Model):
     #The people who are responsible for this survey uid.
     errors = models.ManyToManyField(ErrorType, null=True, blank=True,
                                     through='UIDError')
-    project = models.ForeignKey(Project)
+    questionnaire = models.ForeignKey(Questionnaire)
     role = models.ForeignKey(Role, blank=True, null=True,
                              verbose_name=_('main responsible person'),
                              related_name='uidstatuses')
@@ -159,12 +159,12 @@ class UIDStatus(models.Model):
     def responsible_people(self):
         '''
         Gives the leaf nodes of the tree below a uid-role's nodes or all
-        project leaf nodes if none is assigned.
+        questionnaire leaf nodes if none is assigned.
         '''
         if self.role:
             return self.role.get_leafnodes(include_self=True)
         else:
-            return self.project.get_leafnodes()
+            return self.questionnaire.get_leafnodes()
 
 
 class UIDError(models.Model):
@@ -210,12 +210,12 @@ def create_base_role_tree():
     r211 = create_role('J', r21)
     r212 = create_role('K', r21)
 
-    project, new = Project.objects.get_or_create(pk=1)
-    project.hierarchy = superhead
-    project.save()
+    questionnaire, new = Questionnaire.objects.get_or_create(pk=1)
+    questionnaire.hierarchy = superhead
+    questionnaire.save()
 
     print superhead
     print r1, r11, r111
     print r12, r13, r131
     print r2, r21, r211, r212
-    print project
+    print questionnaire

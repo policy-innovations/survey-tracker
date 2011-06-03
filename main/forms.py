@@ -4,7 +4,7 @@ from django.db.models import Q
 from datetime import date, timedelta
 from django.contrib.admin.widgets import FilteredSelectMultiple
 from mptt.forms import TreeNodeChoiceField
-from main.models import UIDStatus, Role, ErrorType, UIDError, Project
+from main.models import UIDStatus, Role, ErrorType, UIDError, Questionnaire
 
 class ErrorForm(forms.ModelForm):
     '''
@@ -23,11 +23,11 @@ class ErrorForm(forms.ModelForm):
     def __init__(self, role,uid_status=None, *args, **kwargs):
         super(ErrorForm, self).__init__(*args, **kwargs)
         self.uid_status = uid_status
-        project = role.get_project()
+        questionnaire = role.get_questionnaire()
         query = Q()
         # This generates a query which filters trees from error type
-        # according to the project's linked error types
-        for et in project.error_types.all():
+        # according to the questionnaire's linked error types
+        for et in questionnaire.error_types.all():
             q = Q(lft__gte=et.lft, rght__lte=et.rght)
             query |= q
         self.fields['etype'].queryset = ErrorType.objects.filter(query).order_by('level')
@@ -105,12 +105,12 @@ class UIDAssignmentForm(forms.Form):
         super(UIDAssignmentForm, self).__init__(*args, **kwargs)
         self.fields['uids'].queryset = role.managed_uids()
 
-class ProjectAdminForm(forms.ModelForm):
+class QuestionnaireAdminForm(forms.ModelForm):
     hierarchy = forms.ModelChoiceField(queryset=Role.objects.filter(head__isnull=True))
     error_types = forms.ModelMultipleChoiceField(queryset=ErrorType.objects.filter(parent__isnull=True))
 
     class Meta:
-        model=Project
+        model=Questionnaire
 
     def __init__(self, *args, **kwargs):
-        super(ProjectAdminForm, self).__init__(*args, **kwargs)
+        super(QuestionnaireAdminForm, self).__init__(*args, **kwargs)

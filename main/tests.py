@@ -7,7 +7,7 @@ Replace these with more appropriate tests for your application.
 
 from django.test import TestCase
 
-from main.models import Role, ErrorType, Project, UIDStatus
+from main.models import Role, ErrorType, Questionnaire, UIDStatus
 from main.forms import ErrorForm
 
 

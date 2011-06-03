@@ -3,8 +3,8 @@ from django.db.models import Q
 from django.contrib import admin
 
 from mptt.admin import MPTTModelAdmin
-from main.models import Project, ErrorType, Role, UIDStatus
-from main.forms import ProjectAdminForm
+from main.models import Questionnaire, ErrorType, Role, UIDStatus
+from main.forms import QuestionnaireAdminForm
 
 from accounts.admin import ObjectPermissionInline, ObjectPermissionMixin
 
@@ -19,7 +19,7 @@ class RoleInline(admin.TabularInline):
     #filter_horizontal = ('uids',)
 
 class RoleAdmin(MPTTModelAdmin):
-    list_display = ['name', 'user', 'level', 'get_project', 'uids']
+    list_display = ['name', 'user', 'level', 'get_questionnaire', 'uids']
     list_filter = ['user', 'level']
     MPTT_ADMIN_LEVEL_INDENT = 20
     #filter_horizontal = ('uids',)
@@ -51,7 +51,7 @@ class RoleAdmin(MPTTModelAdmin):
         fields = list(super(RoleAdmin, self).get_readonly_fields(request,
                                                                  obj))
         if (not request.user.is_superuser) and request.user==obj.user:
-                fields += ['head', 'user', 'project']
+                fields += ['head', 'user', 'questionnaire']
         return tuple(fields)
 
     def get_form(self, request, obj=None):
@@ -61,14 +61,14 @@ class RoleAdmin(MPTTModelAdmin):
             pass
         return form
 
-class ProjectAdmin(ObjectPermissionMixin, admin.ModelAdmin):
-    form = ProjectAdminForm
+class QuestionnaireAdmin(ObjectPermissionMixin, admin.ModelAdmin):
+    form = QuestionnaireAdminForm
     inlines = [ObjectPermissionInline]
 
 class UIDStatusAdmin(admin.ModelAdmin):
-    list_display = ['uid', 'project', 'role', 'responsible_people']
+    list_display = ['uid', 'questionnaire', 'role', 'responsible_people']
 
-admin.site.register(Project, ProjectAdmin)
+admin.site.register(Questionnaire, QuestionnaireAdmin)
 admin.site.register(ErrorType, ErrorTypeAdmin)
 admin.site.register(Role, RoleAdmin)
 admin.site.register(UIDStatus, UIDStatusAdmin)
