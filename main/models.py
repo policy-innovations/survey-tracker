@@ -23,6 +23,26 @@ class ErrorType(MPTTModel):
     def __unicode__(self):
         return '%s' %(self.name.title())
 
+class ConfirmationQuestion(MPTTModel):
+    '''
+    Extra question to be asked if survey was completed.
+    For example - 
+    What was child's age?
+    --3
+    --4
+    --5
+    '''
+    name = models.CharField(_('name'), max_length=100)
+    parent = TreeForeignKey('self', null=True, blank=True,
+            related_name='subquestions')
+
+    class MPTTMeta:
+        order_insertion_by = ['name']
+        parent_attr = 'parent'
+
+    def __unicode__(self):
+        return '%s' %(self.name.title())
+
 class Role(MPTTModel):
     '''
     This will generate a hierarchy of people according to their
