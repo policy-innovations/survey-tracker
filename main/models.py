@@ -211,6 +211,9 @@ def create_base_role_tree():
     r212 = create_role('K', r21)
 
     questionnaire, new = Questionnaire.objects.get_or_create(pk=1)
+    if new:
+        questionnaire.name = 'TestQs'
+        questionnaire.save()
     questionnaire.hierarchy = superhead
     questionnaire.save()
 
