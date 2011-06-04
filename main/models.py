@@ -23,31 +23,6 @@ class ErrorType(MPTTModel):
     def __unicode__(self):
         return '%s' %(self.name.title())
 
-class Question(models.Model):
-    '''
-    Extra multiple choice question to be asked if survey was completed.
-    For example -
-    Question - What was child's age?
-    Choices -
-    1. 3
-    2. 4
-    3. 5
-    '''
-    name = models.CharField(_('name'), max_length=100)
-
-    def __unicode__(self):
-        return '%s' %(self.name.title())
-
-    def get_choices(self):
-        return Choice.objects.all().filter(question=self)
-
-class Choice(models.Model):
-    name = models.CharField(_('name'), max_length=100)
-    question = models.ForeignKey(Question)
-
-    def __unicode__(self):
-        return '%s' %(self.name.title())
-
 class Role(MPTTModel):
     '''
     This will generate a hierarchy of people according to their
@@ -126,13 +101,41 @@ class Questionnaire(models.Model):
                                      related_name='questionnaire')
     # Tree heads of errors which can occur in the questionnaire
     error_types = models.ManyToManyField(ErrorType, blank=True, null=True)
-    questions = models.ManyToManyField(Question, blank=True, null=True)
 
     def __unicode__(self):
         return self.name.title()
 
     def get_leafnodes(self, inc_self=True):
         return self.hierarchy.get_leafnodes(include_self=inc_self)
+
+    def get_questions(self):
+        return Question.objects.all().filter(questionnaire=self)
+
+class Question(models.Model):
+    '''
+    Extra multiple choice question to be asked if survey was completed.
+    For example -
+    Question - What was child's age?
+    Choices -
+    1. 3
+    2. 4
+    3. 5
+    '''
+    name = models.CharField(_('name'), max_length=100)
+    questionnaire = models.ForeignKey(Questionnaire)
+
+    def __unicode__(self):
+        return '%s' %(self.name.title())
+
+    def get_choices(self):
+        return Choice.objects.all().filter(question=self)
+
+class Choice(models.Model):
+    name = models.CharField(_('name'), max_length=100)
+    question = models.ForeignKey(Question)
+
+    def __unicode__(self):
+        return '%s' %(self.name.title())
 
 class UIDStatus(models.Model):
     '''

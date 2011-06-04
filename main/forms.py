@@ -56,21 +56,25 @@ class QuestionForm(forms.ModelForm):
     '''
     This is a question form which is to be filled if survey was completed.
     '''
-    question = forms.CharField(label=_('Question'), initial='',
-            widget= forms.HiddenInput(attrs={'class':'question'}))
-    selected_choice = forms.ChoiceField(label=_('Select your choice'),
-            widget = forms.RadioSelect(attrs={'class':'choice'}))
+    question = forms.CharField(label=_('Q.'), initial='',
+            widget= forms.TextInput(attrs={'class':'question',
+                'readonly':'readonly'}))
+    selected_choice = forms.ChoiceField(label=_('Answer'), initial='',
+            widget = forms.Select(attrs={'class':'choice'}))
 
     class Meta:
         model = UIDQuestion
         exclude = ('uid_status')
 
-    def __init__(self, role,uid_status=None, *args, **kwargs):
+    def __init__(self, question, uid_status=None, *args, **kwargs):
         super(QuestionForm, self).__init__(*args, **kwargs)
         self.uid_status = uid_status
-        questionnaire = role.get_questionnaire()
-        self.fields['question'].queryset = questionnaire.questions.all()
-        self.fields['choice'].queryset = question.get_choices()
+        self.fields['question'].initial = question
+        choices = [('', '--------')]
+        for c in question.get_choices():
+            choices.append((c.pk, c.name))
+        self.fields['selected_choice'].choices = choices
+        self.fields['selected_choice'].queryset = question.get_choices()
 
     def clean_question(self):
         cleaned_data = self.cleaned_data

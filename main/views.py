@@ -9,8 +9,13 @@ from django.utils import simplejson
 from django.core.urlresolvers import reverse
 from datetime import date as _date
 from datetime import timedelta as _timedelta
-from main.forms import ErrorForm, UIDForm, UIDAssignmentForm
-from main.models import ErrorType, Role, Questionnaire, UIDStatus
+from main.forms import ErrorForm, UIDForm, UIDAssignmentForm, QuestionForm
+from main.models import ErrorType, Role, Questionnaire, UIDStatus, Question
+
+def iterate(data):
+    for index in range(len(data)):
+        print data[index]
+        yield data[index]
 
 def home(request):
     return render(request, 'main/home.html',)
@@ -28,40 +33,47 @@ def select_surveyor(request, proj_pk):
 def add_completed_entry(request, role_id):
     role = Role.objects.get(id=role_id)
     questionnaire = role.get_questionnaire()
+    questions = questionnaire.get_questions()
+    iter_questions = iterate(questions)
     QuestionFormset = formset_factory(QuestionForm,
-            extra=len(questionnaire.questions.all()),
-            max_num = len(QuestionType.objects.all().filter(level=0)))
-    QuestionFormset.form = staticmethod(curry(QuestionForm, role))
+            extra=5,
+            max_num=len(questions))
+    print QuestionFormset
+    QuestionFormset.form = staticmethod(curry(QuestionForm,
+        iter_questions.next()))
     if request.method == 'POST':
         d = request.POST.get('date').split('-')
         date = _date(year=int(d[0]), month=int(d[1]), day=int(d[2]))
         uid_form = UIDForm(role, date, request.POST, request.FILES)
-        question_formset = QuestionFormset()
+        formset = QuestionFormset()
 
         if uid_form.is_valid():
             uid_status = uid_form.save()
         else:
             return render(request, 'main/add_completed_entry.html',
-                    {'uid_form':uid_form, 'question_formset':question_formset,
+                    {'uid_form':uid_form, 'formset':formset,
                         'date':date, 'role':role})
 
-        QuestionFormset.form = staticmethod(curry(QuestionForm, role, uid_status))
-        question_formset = QuestionFormset(request.POST, request.FILES)
-        if question_formset.is_valid():
-            for form in question_formset:
+        iter_questions = iterate(questions)
+        QuestionFormset.form = staticmethod(curry(QuestionForm,
+            iterquestions.next(), uid_status))
+
+        formset = QuestionFormset(request.POST, request.FILES)
+        if formset.is_valid():
+            for form in formset:
                 form.save()
             return HttpResponseRedirect(reverse('add-completed-entry-done',
                 kwargs={'role_id':role.id}))
         else:
             return render(request, 'main/add_completed_entry.html',
-                    {'uid_form':uid_form, 'question_formset':question_formset,
+                    {'uid_form':uid_form, 'formset':formset,
                         'date':date, 'role':role})
     else:
         date = _date.today() - _timedelta(days=2)
         uid_form = UIDForm(role, date)
-        question_formset = QuestionFormset()
+        formset = QuestionFormset()
         return render(request, 'main/add_completed_entry.html',
-                {'uid_form':uid_form, 'question_formset':question_formset,
+                {'uid_form':uid_form, 'formset':formset,
                     'date':date, 'role':role})
 
 @login_required
