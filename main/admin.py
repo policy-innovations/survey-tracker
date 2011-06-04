@@ -3,7 +3,7 @@ from django.db.models import Q
 from django.contrib import admin
 
 from mptt.admin import MPTTModelAdmin
-from main.models import Questionnaire, ErrorType, Role, UIDStatus
+from main.models import *
 from main.forms import QuestionnaireAdminForm
 
 from accounts.admin import ObjectPermissionInline, ObjectPermissionMixin
@@ -68,7 +68,15 @@ class QuestionnaireAdmin(ObjectPermissionMixin, admin.ModelAdmin):
 class UIDStatusAdmin(admin.ModelAdmin):
     list_display = ['uid', 'questionnaire', 'role', 'responsible_people']
 
+class ChoiceInline(admin.TabularInline):
+    model = Choice
+    extra = 5
+
+class QuestionAdmin(admin.ModelAdmin):
+    inlines = [ChoiceInline]
+
 admin.site.register(Questionnaire, QuestionnaireAdmin)
 admin.site.register(ErrorType, ErrorTypeAdmin)
 admin.site.register(Role, RoleAdmin)
 admin.site.register(UIDStatus, UIDStatusAdmin)
+admin.site.register(Question, QuestionAdmin)

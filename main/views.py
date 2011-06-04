@@ -27,26 +27,42 @@ def select_surveyor(request, proj_pk):
 @login_required
 def add_completed_entry(request, role_id):
     role = Role.objects.get(id=role_id)
-    UIDFormset = formset_factory(UIDForm, extra=10)
+    questionnaire = role.get_questionnaire()
+    QuestionFormset = formset_factory(QuestionForm,
+            extra=len(questionnaire.questions.all()),
+            max_num = len(QuestionType.objects.all().filter(level=0)))
+    QuestionFormset.form = staticmethod(curry(QuestionForm, role))
     if request.method == 'POST':
         d = request.POST.get('date').split('-')
         date = _date(year=int(d[0]), month=int(d[1]), day=int(d[2]))
-        UIDFormset.form = staticmethod(curry(UIDForm, role, date))
-        formset = UIDFormset(request.POST, request.FILES)
-        if formset.is_valid():
-            for form in formset:
+        uid_form = UIDForm(role, date, request.POST, request.FILES)
+        question_formset = QuestionFormset()
+
+        if uid_form.is_valid():
+            uid_status = uid_form.save()
+        else:
+            return render(request, 'main/add_completed_entry.html',
+                    {'uid_form':uid_form, 'question_formset':question_formset,
+                        'date':date, 'role':role})
+
+        QuestionFormset.form = staticmethod(curry(QuestionForm, role, uid_status))
+        question_formset = QuestionFormset(request.POST, request.FILES)
+        if question_formset.is_valid():
+            for form in question_formset:
                 form.save()
-            return HttpResponseRedirect(reverse('add-uncompleted-entry-done',
+            return HttpResponseRedirect(reverse('add-completed-entry-done',
                 kwargs={'role_id':role.id}))
         else:
             return render(request, 'main/add_completed_entry.html',
-                    {'formset':formset, 'date':date, 'role':role})
+                    {'uid_form':uid_form, 'question_formset':question_formset,
+                        'date':date, 'role':role})
     else:
         date = _date.today() - _timedelta(days=2)
-        UIDFormset.form = staticmethod(curry(UIDForm, role, date))
-        formset = UIDFormset()
+        uid_form = UIDForm(role, date)
+        question_formset = QuestionFormset()
         return render(request, 'main/add_completed_entry.html',
-                {'formset':formset, 'date':date, 'role':role})
+                {'uid_form':uid_form, 'question_formset':question_formset,
+                    'date':date, 'role':role})
 
 @login_required
 def add_completed_entry_done(request, role_id):
