@@ -4,7 +4,7 @@ from django.db.models import Q
 from datetime import date, timedelta
 from django.contrib.admin.widgets import FilteredSelectMultiple
 from mptt.forms import TreeNodeChoiceField
-from main.models import UIDStatus, Role, ErrorType, UIDError, Questionnaire
+from main.models import *
 
 class ErrorForm(forms.ModelForm):
     '''
@@ -51,6 +51,53 @@ class ErrorForm(forms.ModelForm):
         if commit:
             m.save()
         return m
+
+class QuestionForm(forms.ModelForm):
+    '''
+    This is a question form which is to be filled if survey was completed.
+    '''
+    question = forms.CharField(label=_('Question'), initial='',
+            widget= forms.HiddenInput(attrs={'class':'question'}))
+    selected_choice = forms.ChoiceField(label=_('Select your choice'),
+            widget = forms.RadioSelect(attrs={'class':'choice'}))
+
+    class Meta:
+        model = UIDQuestion
+        exclude = ('uid_status')
+
+    def __init__(self, role,uid_status=None, *args, **kwargs):
+        super(QuestionForm, self).__init__(*args, **kwargs)
+        self.uid_status = uid_status
+        questionnaire = role.get_questionnaire()
+        self.fields['question'].queryset = questionnaire.questions.all()
+        self.fields['choice'].queryset = question.get_choices()
+
+    def clean_question(self):
+        cleaned_data = self.cleaned_data
+        try:
+            c = cleaned_data['question']
+            return self.cleaned_data['question']
+        except:
+            return None #If form is empty in formset, "None" is returned.
+
+    def clean_selected_choice(self):
+        cleaned_data = self.cleaned_data
+        try:
+            c = cleaned_data['selected_choice']
+            return self.cleaned_data['selected_choice']
+        except:
+            raise forms.ValidationError('Please select a choice.')
+
+
+    def save(self, force_insert=False, force_update=False, commit=True):
+        if self.clean_question() is None:
+            return None
+        m = super(UIDQuestion(),self).save(commit=False)
+        m.uid_status = self.uid_status
+        if commit:
+            m.save()
+        return m
+
 
 class UIDForm(forms.Form):
     '''

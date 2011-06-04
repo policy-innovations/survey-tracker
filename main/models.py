@@ -23,22 +23,27 @@ class ErrorType(MPTTModel):
     def __unicode__(self):
         return '%s' %(self.name.title())
 
-class ConfirmationQuestion(MPTTModel):
+class Question(models.Model):
     '''
-    Extra question to be asked if survey was completed.
-    For example - 
-    What was child's age?
-    --3
-    --4
-    --5
+    Extra multiple choice question to be asked if survey was completed.
+    For example -
+    Question - What was child's age?
+    Choices -
+    1. 3
+    2. 4
+    3. 5
     '''
     name = models.CharField(_('name'), max_length=100)
-    parent = TreeForeignKey('self', null=True, blank=True,
-            related_name='subquestions')
 
-    class MPTTMeta:
-        order_insertion_by = ['name']
-        parent_attr = 'parent'
+    def __unicode__(self):
+        return '%s' %(self.name.title())
+
+    def get_choices(self):
+        return Choice.objects.all().filter(question=self)
+
+class Choice(models.Model):
+    name = models.CharField(_('name'), max_length=100)
+    question = models.ForeignKey(Question)
 
     def __unicode__(self):
         return '%s' %(self.name.title())
@@ -121,6 +126,7 @@ class Questionnaire(models.Model):
                                      related_name='questionnaire')
     # Tree heads of errors which can occur in the questionnaire
     error_types = models.ManyToManyField(ErrorType, blank=True, null=True)
+    questions = models.ManyToManyField(Question, blank=True, null=True)
 
     def __unicode__(self):
         return self.name.title()
@@ -138,6 +144,8 @@ class UIDStatus(models.Model):
     #The people who are responsible for this survey uid.
     errors = models.ManyToManyField(ErrorType, null=True, blank=True,
                                     through='UIDError')
+    questions = models.ManyToManyField(Question, null=True, blank=False,
+            through='UIDQuestion')
     questionnaire = models.ForeignKey(Questionnaire)
     role = models.ForeignKey(Role, blank=True, null=True,
                              verbose_name=_('main responsible person'),
@@ -177,6 +185,14 @@ class UIDError(models.Model):
     details = models.TextField(_('error details'), blank=True,
                                help_text="enter extra details just in case\
                                useful.") #Revise this
+
+class UIDQuestion(models.Model):
+    '''
+    A question for a completed will be created through this.
+    '''
+    question = models.ForeignKey(Question)
+    uid_status = models.ForeignKey(UIDStatus)
+    selected_choice = models.ForeignKey(Choice)
 
 #For quick creation of fixtures.
 
