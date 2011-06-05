@@ -109,7 +109,7 @@ class UIDForm(forms.Form):
     required.
     '''
     uid = forms.CharField(label="UID", required=True, widget=forms.TextInput(
-        attrs={'id':'uid'}))
+        attrs={'class':'uid'}))
 
     def __init__(self, role, date, *args, **kwargs):
         '''

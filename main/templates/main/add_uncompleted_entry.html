@@ -65,10 +65,12 @@ function deleteForm(btn, prefix) {
                 }
                 return true;
                 });
+            var role_id = {{ role.id }};
             var index = 0;
             var error_types = new Array();
+            var uid_list = [];
             var error_list;
-            $.getJSON('/get-error-types/', function(data){
+            $.getJSON('/get-error-types/'+role_id, function(data){
                 error_list = data;
                 for(i=0; i<error_list.length;i++){
                 if(error_list[i].fields.level == 0)
@@ -91,6 +93,12 @@ function deleteForm(btn, prefix) {
                     });
 
             });
+            $.getJSON('/get-uid-list/'+role_id, function(data){
+                    for(i=0;i<data.length;i++){
+                    uid_list.push(String(data[i].fields.uid));
+                    }
+                    $(".uid").autocomplete({source: uid_list});
+                    });
             $(".error_type_select").live('change', function(){
                     var error_type = $(this);
                     var new_name = $(this).find('option:selected').text();
@@ -183,10 +191,17 @@ function deleteForm(btn, prefix) {
                     e.preventDefault();
                     return false;
                     }
-                    if($('#uid').val() == ''){
+                    if($('.uid').val() == ''){
                     e.preventDefault();
                     alert("UID can't be left empty");
                     return false;
+                    }
+                    else{
+                    if ($.inArray($('.uid').val(), uid_list)==-1){
+                    e.preventDefault();
+                    alert("You have entered invalid UID.\nPlease retype and select one from suggestions.");
+                    return false;
+                    }
                     }
 
                     var empty_error_forms_count = 0;
