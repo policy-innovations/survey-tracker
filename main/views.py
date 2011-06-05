@@ -5,7 +5,6 @@ from django.core.urlresolvers import reverse
 from django.forms.formsets import formset_factory
 from django.contrib.auth.decorators import login_required
 from django.utils.functional import curry
-from django.utils import simplejson
 from django.core.urlresolvers import reverse
 from datetime import date as _date
 from datetime import timedelta as _timedelta
@@ -168,9 +167,51 @@ def manage_sub_uids(request, role_id, sub_role):
     }
     return render(request, 'main/manage_sub_uids.html', context)
 
-def get_error_types(request):
+@login_required
+def get_error_types(request, role_id):
+    role = Role.objects.get(id=role_id)
+    questionnaire = role.get_questionnaire()
+    error_types = []
+    for et in questionnaire.error_types.all().order_by('pk'):
+        for e in et.get_descendants(include_self=True).order_by('pk'):
+            error_types.append(e)
     mimetype = 'application/json'
     json_serializer = serializers.get_serializer("json")()
-    data = json_serializer.serialize(ErrorType.objects.all(),
-            ensure_ascii=False, fields=('name', 'id', 'parent', 'level'))
+    data = json_serializer.serialize(error_types,
+            ensure_ascii=False, fields=('name', 'parent', 'level'))
+    return HttpResponse(data, mimetype)
+
+@login_required
+def get_uid_list(request, role_id):
+    role = Role.objects.get(id=role_id)
+    mimetype = 'application/json'
+    json_serializer = serializers.get_serializer("json")()
+    data = json_serializer.serialize(role.uids(),
+            ensure_ascii=False, fields=('uid'))
+    return HttpResponse(data, mimetype)
+
+@login_required
+def get_questions(request, role_id):
+    role = Role.objects.get(id=role_id)
+    questionnaire = role.get_questionnaire()
+    questions = questionnaire.get_questions().order_by('name')
+    mimetype = 'application/json'
+    json_serializer = serializers.get_serializer("json")()
+    data = json_serializer.serialize(questions,
+            ensure_ascii=False, fields=('name'))
+    return HttpResponse(data, mimetype)
+
+@login_required
+def get_choices(request, role_id):
+    role = Role.objects.get(id=role_id)
+    questionnaire = role.get_questionnaire()
+    questions = questionnaire.get_questions()
+    choices = []
+    for q in questions:
+        for c in q.get_choices().order_by('name'):
+            choices.append(c)
+    mimetype = 'application/json'
+    json_serializer = serializers.get_serializer("json")()
+    data = json_serializer.serialize(choices,
+            ensure_ascii=False, fields=('name', 'question'))
     return HttpResponse(data, mimetype)
