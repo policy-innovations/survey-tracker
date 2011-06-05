@@ -1,9 +1,8 @@
 {% extends 'base.html' %}
 {% block head %}
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"
-    type="text/javascript"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js"
     type="text/javascript"></script>
+<script src="{{ STATIC_URL }}js/validate_date.js" type="text/javascript"></script>
 <script type="text/javascript">
     function updateElementIndex(el, prefix, ndx) {
         var id_regex = new RegExp('(' + prefix + '-\\d+)');
@@ -59,6 +58,13 @@ function deleteForm(btn, prefix) {
                 return deleteForm(this, 'form');
                 });
             $('#date').datepicker({dateFormat:'yy-mm-dd', inline:true});
+            $('#date').live('change', function(){
+                if(isDate($(this).val())==false){
+                $(this).focus();
+                return false;
+                }
+                return true;
+                });
             var index = 0;
             var error_types = new Array();
             var error_list;
@@ -106,7 +112,7 @@ function deleteForm(btn, prefix) {
                         });
                     if (isNaN(sel_error) == false) {
                     var output = "&nbsp;&nbsp;"
-                    output += '<select class="sub_errors" level="1"';
+                        output += '<select class="sub_errors" level="1"';
                     output += 'id="' + jQuery(this).get(0).id + '">';
                     output += '<option value="" selected="selected">';
                     output += '------------</option>';
@@ -173,6 +179,10 @@ function deleteForm(btn, prefix) {
             });
 
             $("#entry_form").submit(function(e){
+                    if(isDate($('#date').val())==false){
+                    e.preventDefault();
+                    return false;
+                    }
                     if($('#uid').val() == ''){
                     e.preventDefault();
                     alert("UID can't be left empty");
@@ -192,13 +202,13 @@ function deleteForm(btn, prefix) {
                         }
                         })
                     if ($('.error_types').length == empty_error_forms_count){
-                    e.preventDefault();
-                    alert("Atleast one error should be selected.");
-                    return false;
+                        e.preventDefault();
+                        alert("Atleast one error should be selected.");
+                        return false;
                     }
 
                     return true;
-                    });
+            });
     });
 </script>
 <link rel='stylesheet' href="{{ STATIC_URL }}css/jquery-ui-1.8.13.custom.css" type = "text/css"/>

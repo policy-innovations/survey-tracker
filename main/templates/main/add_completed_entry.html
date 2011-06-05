@@ -1,9 +1,8 @@
 {% extends 'base.html' %}
 {% block head %}
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"
-    type="text/javascript"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js"
     type="text/javascript"></script>
+<script src="{{ STATIC_URL }}js/validate_date.js" type="text/javascript"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}js/add_form.js"></script>
 <script type="text/javascript">
     $(document).ready(function(){
@@ -14,6 +13,26 @@
                 return deleteForm(this, 'form');
                 });
             $('#date').datepicker({dateFormat:'yy-mm-dd', inline:true});
+            $('#date').live('change', function(){
+                if(isDate($(this).val())==false){
+                $(this).focus();
+                return false;
+                }
+                return true;
+                });
+            $("#entry_form").submit(function(e){
+                    if(isDate($('#date').val())==false){
+                    e.preventDefault();
+                    return false;
+                    }
+                    if($('#uid').val() == ''){
+                    e.preventDefault();
+                    alert("UID can't be left empty");
+                    return false;
+                    }
+                    return true;
+                    });
+
     });
 </script>
 <link rel='stylesheet' href="{{ STATIC_URL }}css/jquery-ui-1.8.13.custom.css" type = "text/css"/>
