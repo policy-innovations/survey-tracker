@@ -21,17 +21,12 @@
                 return true;
                 });
             $("#entry_form").submit(function(e){
-                    if(isDate($('#date').val())==false){
-                    e.preventDefault();
-                    return false;
-                    }
-                    if($('#uid').val() == ''){
-                    e.preventDefault();
-                    alert("UID can't be left empty");
-                    return false;
-                    }
-                    return true;
-                    });
+                if(isDate($('#date').val())==false){
+                e.preventDefault();
+                return false;
+                }
+                return true;
+                });
 
     });
 </script>
@@ -40,15 +35,15 @@
 {% block content %}
 <h3>Add Completed Surveys</h3>
 <table>
-        <tr>
-            <th>Name of Surveyor:</th>
-            <td>{{ role.name }}</td>
-        </tr>
-        <tr>
-            <th>Date of completion:</th>
-            <td><input type="text" name="date" value="{{ date|date:"Y-m-j" }}" id="date"></td>
-        </tr>
-    </table>
+    <tr>
+        <th>Name of Surveyor:</th>
+        <td>{{ role.name }}</td>
+    </tr>
+    <tr>
+        <th>Date of completion:</th>
+        <td><input type="text" name="date" value="{{ date|date:"Y-m-j" }}" id="date"></td>
+    </tr>
+</table>
 <form action="" method="post" class="entry_form">
     {{ formset.management_form }}
     <table>
