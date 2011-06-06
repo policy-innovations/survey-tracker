@@ -11,11 +11,6 @@ from datetime import timedelta as _timedelta
 from main.forms import ErrorForm, UIDForm, UIDAssignmentForm, QuestionForm
 from main.models import ErrorType, Role, Questionnaire, UIDStatus, Question
 
-def iterate(data):
-    for index in range(len(data)):
-        print data[index]
-        yield data[index]
-
 def home(request):
     return render(request, 'main/home.html',)
 
@@ -33,13 +28,10 @@ def add_completed_entry(request, role_id):
     role = Role.objects.get(id=role_id)
     questionnaire = role.get_questionnaire()
     questions = questionnaire.get_questions()
-    iter_questions = iterate(questions)
     QuestionFormset = formset_factory(QuestionForm,
             extra=5,
             max_num=len(questions))
-    print QuestionFormset
-    QuestionFormset.form = staticmethod(curry(QuestionForm,
-        iter_questions.next()))
+    QuestionFormset.form = staticmethod(curry(QuestionForm, role))
     if request.method == 'POST':
         d = request.POST.get('date').split('-')
         date = _date(year=int(d[0]), month=int(d[1]), day=int(d[2]))
@@ -53,9 +45,8 @@ def add_completed_entry(request, role_id):
                     {'uid_form':uid_form, 'formset':formset,
                         'date':date, 'role':role})
 
-        iter_questions = iterate(questions)
-        QuestionFormset.form = staticmethod(curry(QuestionForm,
-            iterquestions.next(), uid_status))
+        QuestionFormset.form = staticmethod(curry(QuestionForm, role,
+            uid_status))
 
         formset = QuestionFormset(request.POST, request.FILES)
         if formset.is_valid():
@@ -186,7 +177,7 @@ def get_uid_list(request, role_id):
     role = Role.objects.get(id=role_id)
     mimetype = 'application/json'
     json_serializer = serializers.get_serializer("json")()
-    data = json_serializer.serialize(role.uids(),
+    data = json_serializer.serialize(role.uids().filter(completer=None),
             ensure_ascii=False, fields=('uid'))
     return HttpResponse(data, mimetype)
 

@@ -3,30 +3,74 @@
 <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js"
     type="text/javascript"></script>
 <script src="{{ STATIC_URL }}js/validate_date.js" type="text/javascript"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}js/add_form.js"></script>
 <script type="text/javascript">
     $(document).ready(function(){
+            var role_id = {{ role.id }};
+            var questions;
+            var choices;
+            var uid_list = new Array();
+
+            var output = '<input type="hidden" name="date" class="hidden_date" value="'+$('#date').val()+'"></input>';
+            $(output).insertBefore('.uid');
+
+            $('#date').live('change', function(){
+                var d=$(this).val();
+                $('.hidden_date').each(function(){
+                    $(this).val(d);
+                    });
+                });
             $('.add-row').click(function(){
-                return addForm(this, 'form');
+                output = '<br/><form action="" method="post" class="entry_form">';
+                output += $('.entry_form:first').clone().html();
+                output += '</form><br/>';
+                $(output).insertBefore($(this));
                 });
-            $('.delete-row').click(function(){
-                return deleteForm(this, 'form');
+
+            $.getJSON('/get-choices/'+role_id, function(data){
+                choices = data;
+                $.getJSON('/get-questions/'+role_id, function(data){
+                    questions = data;
+                    var index=0;
+                    $('.question').each(function(){
+                        output = '<tr><th>' + questions[index].fields.name + '</th></tr>';
+                        $(output).insertAfter($(this));
+                        output = '<option value="" selected="selected">---------</option>';
+                        for(i=0;i<choices.length;i++){
+                        if(choices[i].fields.question==questions[index].pk)
+                        output += '<option value="'+choices[i].pk+'">'+choices[i].fields.name+'</option>';
+                        }
+                        $(this).siblings('.choice').html(output);
+                        $(this).val(questions[index].pk);
+                        index += 1;
+                        });
+                    });
                 });
+
+            $.getJSON('/get-uid-list/'+role_id, function(data){
+                    for(i=0;i<data.length;i++){
+                    uid_list.push(String(data[i].fields.uid));
+                    }
+                    $(".uid").each(function(){
+                        $(this).autocomplete({source: uid_list});
+                        });
+                    });
+
+
             $('#date').datepicker({dateFormat:'yy-mm-dd', inline:true});
             $('#date').live('change', function(){
-                if(isDate($(this).val())==false){
-                $(this).focus();
-                return false;
-                }
-                return true;
-                });
+                    if(isDate($(this).val())==false){
+                    $(this).focus();
+                    return false;
+                    }
+                    return true;
+                    });
             $("#entry_form").submit(function(e){
-                if(isDate($('#date').val())==false){
-                e.preventDefault();
-                return false;
-                }
-                return true;
-                });
+                    if(isDate($('#date').val())==false){
+                    e.preventDefault();
+                    return false;
+                    }
+                    return true;
+                    });
 
     });
 </script>
@@ -46,7 +90,7 @@
 </table>
 <form action="" method="post" class="entry_form">
     {{ formset.management_form }}
-    <table>
+    <table border="1">
         {{ formset.non_form_errors.as_ul }}
         {% for field in uid_form %}
         <th>{{ field.label }} : </th>
@@ -78,7 +122,7 @@
         </td>
         {% endfor %}
         <td><input type="submit" value="Submit" /></td>
-        <td>{% csrf_token %}</td>
+        {% csrf_token %}
     </table>
 </form>
 <a href="javascript:void(0)" class="add-row">

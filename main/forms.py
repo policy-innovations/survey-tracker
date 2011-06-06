@@ -57,30 +57,32 @@ class QuestionForm(forms.ModelForm):
     This is a question form which is to be filled if survey was completed.
     '''
     question = forms.CharField(label=_('Q.'), initial='',
-            widget= forms.TextInput(attrs={'class':'question',
+            widget= forms.HiddenInput(attrs={'class':'question',
                 'readonly':'readonly'}))
-    selected_choice = forms.ChoiceField(label=_('Answer'), initial='',
+    selected_choice = forms.CharField(label=_('Answer'), initial='',
             widget = forms.Select(attrs={'class':'choice'}))
 
     class Meta:
         model = UIDQuestion
         exclude = ('uid_status')
 
-    def __init__(self, question, uid_status=None, *args, **kwargs):
+    def __init__(self, role, uid_status=None, *args, **kwargs):
         super(QuestionForm, self).__init__(*args, **kwargs)
         self.uid_status = uid_status
-        self.fields['question'].initial = question
-        choices = [('', '--------')]
-        for c in question.get_choices():
-            choices.append((c.pk, c.name))
-        self.fields['selected_choice'].choices = choices
-        self.fields['selected_choice'].queryset = question.get_choices()
+        questionnaire = role.get_questionnaire()
+        questions = questionnaire.get_questions()
+        choices = []
+        for q in questions:
+            for c in q.get_choices():
+                choices.append(c)
+        self.fields['selected_choice'].queryset = choices
+        print choices
 
     def clean_question(self):
         cleaned_data = self.cleaned_data
         try:
             c = cleaned_data['question']
-            return self.cleaned_data['question']
+            return Question.objects.get(pk=int(self.cleaned_data['question']))
         except:
             return None #If form is empty in formset, "None" is returned.
 
@@ -88,7 +90,7 @@ class QuestionForm(forms.ModelForm):
         cleaned_data = self.cleaned_data
         try:
             c = cleaned_data['selected_choice']
-            return self.cleaned_data['selected_choice']
+            return Choice.objects.get(pk=int(self.cleaned_data['selected_choice']))
         except:
             raise forms.ValidationError('Please select a choice.')
 
@@ -96,7 +98,7 @@ class QuestionForm(forms.ModelForm):
     def save(self, force_insert=False, force_update=False, commit=True):
         if self.clean_question() is None:
             return None
-        m = super(UIDQuestion(),self).save(commit=False)
+        m = super(QuestionForm(),self).save(commit=False)
         m.uid_status = self.uid_status
         if commit:
             m.save()
