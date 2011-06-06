@@ -143,7 +143,8 @@ class UIDStatus(models.Model):
     to the db pks.
     '''
     uid = models.CharField(_('unique identifier'), max_length=30,
-                           unique=True)
+            unique=True)
+    extra_details = models.TextField(_('extra details'), blank=True)
     #The people who are responsible for this survey uid.
     errors = models.ManyToManyField(ErrorType, null=True, blank=True,
                                     through='UIDError')
