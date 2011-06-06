@@ -1,3 +1,6 @@
 [submodule "lib/mptt"]
 	path = lib/mptt
 	url = https://github.com/django-mptt/django-mptt.git
+[submodule "lib/south"]
+	path = lib/south
+	url = https://github.com/theatlantic/django-south.git
