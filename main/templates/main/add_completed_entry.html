@@ -112,6 +112,13 @@ $(form).hide();
 $('<b style="color:green; display:block;">Form has been submitted successfully.</b>').insertAfter($(form));
 var uid = $(form).find('.uid').val();
 uid_list = $.grep(uid_list, function(val) {return val != uid; });
+if(uid_list.length==0){
+$('.entry_form').each(function(){
+    $(this).hide();
+    });
+$('<h3 style="color:blue;">No more UIDs left for this surveyor.</h3>').insertAfter($('#date'));
+return true;
+}
 $('.uid').each(function(){
     $(this).autocomplete({source: uid_list});
     });
