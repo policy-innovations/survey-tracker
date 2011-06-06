@@ -30,7 +30,7 @@
                         questions = data;
                         $('.entry_form').each(function(){
                             var output = '<input type="hidden" name="date" class="hidden_date" value="'+$('#date').val()+'"></input>';
-            $(output).insertBefore('.uid');
+            $(output).insertBefore($(this).find('.uid'));
 
                             index=0;
                             $(this).find('.question').each(function(){
@@ -81,7 +81,7 @@
                         return false;
                         }
                         else{
-                        if ($.inArray($('.uid').val(), uid_list)==-1){
+                        if ($.inArray($(this).find('.uid').val(), uid_list)==-1){
                         alert("You have entered invalid UID.\nPlease retype and select one from suggestions.");
                         return false;
                         }
@@ -100,9 +100,7 @@
                             return false;
 
                         //It means form was valid
-                        var uid = $(this).find('.uid').val();
                         var form=this;
-                        uid_list = $.grep(uid_list, function(val) { return val != uid; });
                         $.ajax({
 type: "POST",
 url:$(this).attr('action'),
@@ -113,7 +111,7 @@ $(form).find('#errors').remove();
 $(form).hide();
 $('<b style="color:green; display:block;">Form has been submitted successfully.</b>').insertAfter($(form));
 var uid = $(form).find('.uid').val();
-uid_list = $.grep(uid_list, function(val) { return val != uid; });
+uid_list = $.grep(uid_list, function(val) {return val != uid; });
 $('.uid').each(function(){
     $(this).autocomplete({source: uid_list});
     });
