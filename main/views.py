@@ -38,6 +38,21 @@ def add_completed_entry(request, role_id):
         uid_form = UIDForm(role, date, request.POST, request.FILES)
         formset = QuestionFormset()
 
+        if request.is_ajax():
+            if uid_form.is_valid():
+                uid_status=uid_form.save()
+            else:
+                return HttpResponse('Error')
+            QuestionFormset.form = staticmethod(curry(QuestionForm, role,
+                uid_status))
+            formset = QuestionFormset(request.POST, request.FILES)
+            if formset.is_valid():
+                for form in formset:
+                    form.save()
+                return HttpResponse('Success')
+            else:
+                return HttpResponse('Error')
+
         if uid_form.is_valid():
             uid_status = uid_form.save()
         else:

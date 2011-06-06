@@ -76,7 +76,6 @@ class QuestionForm(forms.ModelForm):
             for c in q.get_choices():
                 choices.append(c)
         self.fields['selected_choice'].queryset = choices
-        print choices
 
     def clean_question(self):
         cleaned_data = self.cleaned_data
