@@ -3,7 +3,12 @@
 {% block content %}
 {% for role in user.role_set.all %}
 <h3>{{ role.get_questionnaire }}</h3>
-    <a href="{% url select-surveyor role.get_questionnaire.id %}">Add Entry</a><br/>
-    <a href="{% url manage-uids role.id %}">Manage UIDs</a>
+<ul>
+    <li><a href="{% url select-surveyor role.get_questionnaire.id %}">Add Entry</a></li>
+    <li><a href="{% url manage-uids role.id %}">Manage UIDs</a></li>
+    {% if role.is_root_node or request.user.is_superuser %}
+    <li><a href="{% url import-uids role.id %}">Import UIDs</a></li>
+    {% endif %}
+</ul>
 {% endfor %}
 {% endblock %}

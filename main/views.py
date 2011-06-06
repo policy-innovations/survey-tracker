@@ -8,14 +8,17 @@ from django.utils.functional import curry
 from django.core.urlresolvers import reverse
 from datetime import date as _date
 from datetime import timedelta as _timedelta
-from main.forms import ErrorForm, UIDForm, UIDAssignmentForm, QuestionForm
+from main.forms import *
 from main.models import ErrorType, Role, Questionnaire, UIDStatus, Question
+import xlrd
 
 def home(request):
     return render(request, 'main/home.html',)
 
 @login_required
 def select_surveyor(request, proj_pk):
+    if not request.user.is_authenticated():
+        raise Http404
     questionnaire = Questionnaire.objects.get(pk=proj_pk)
     role = questionnaire.hierarchy.get_descendants(include_self=True).get(
             user=request.user)
@@ -174,6 +177,49 @@ def manage_sub_uids(request, role_id, sub_role):
     return render(request, 'main/manage_sub_uids.html', context)
 
 @login_required
+def import_uids(request, role_id):
+    role = Role.objects.get(id=role_id)
+    questionnaire = role.get_questionnaire()
+    if not request.user == role.user:
+        raise Http404
+    extra_details_name = []
+    if request.method == 'POST':
+        form = ImportUIDForm(request.POST, request.FILES)
+        if form.is_valid():
+            input_excel = request.FILES['file']
+            book = xlrd.open_workbook(file_contents=input_excel.read())
+            sheet1 = book.sheet_by_index(0)
+            for rownum in range(sheet1.nrows):
+                row = sheet1.row_values(rownum)
+                if rownum is 0:
+                    extra_details_name = row[1:]
+                else:
+                    uid = row[0]
+                    try:
+                        uid = str(int(uid))
+                    except:
+                        pass
+                    uid_status = UIDStatus(uid=uid,
+                            questionnaire=questionnaire)
+                    extra_details = ''
+                    for i in range(len(row[1:])):
+                        extra_details = extra_details + extra_details_name[i] + ':' + row[i+1] + '<br/>'
+                    uid_status.extra_details = extra_details
+                    try:
+                        uid_status.save()
+                        print uid_status
+                    except:
+                        pass
+            return HttpResponse("Success")
+        else:
+            return render(request, 'main/import_uids.html', {'role':role,
+                'form':form})
+    else:
+        form = ImportUIDForm()
+        return render(request, 'main/import_uids.html', {'role':role,
+            'form':form})
+
+@login_required
 def get_error_types(request, role_id):
     role = Role.objects.get(id=role_id)
     questionnaire = role.get_questionnaire()
@@ -193,7 +239,7 @@ def get_uid_list(request, role_id):
     mimetype = 'application/json'
     json_serializer = serializers.get_serializer("json")()
     data = json_serializer.serialize(role.uids().filter(completer=None),
-            ensure_ascii=False, fields=('uid'))
+            ensure_ascii=False, fields=('uid', 'extra_details'))
     return HttpResponse(data, mimetype)
 
 @login_required

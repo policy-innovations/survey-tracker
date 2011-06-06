@@ -69,6 +69,7 @@ function deleteForm(btn, prefix) {
             var index = 0;
             var error_types = new Array();
             var uid_list = [];
+            var extra_details = [];
             var error_list;
             $.getJSON('/get-error-types/'+role_id, function(data){
                 error_list = data;
@@ -96,8 +97,23 @@ function deleteForm(btn, prefix) {
             $.getJSON('/get-uid-list/'+role_id, function(data){
                     for(i=0;i<data.length;i++){
                     uid_list.push(String(data[i].fields.uid));
+                    extra_details.push(data[i].fields.extra_details);
                     }
                     $(".uid").autocomplete({source: uid_list});
+                    $('.uid').bind('autocompleteselect', function(event,ui){
+                        $(this).parent().find('.extra_details').remove();
+                        index = uid_list.indexOf(String($(this).val()));
+                        if (index != -1){
+                        $('<span class="extra_details" display="block"><br/>'+ extra_details[index] + '</span>').insertAfter($(this));
+                        }
+                        });
+                    $('.uid').live('change', function(){
+                        $(this).parent().find('.extra_details').remove();
+                        index = uid_list.indexOf(String($(this).val()));
+                        if (index != -1){
+                        $('<span class="extra_details" display="block"><br/>'+ extra_details[index] + '</span>').insertAfter($(this));
+                        }
+                        });
                     });
             $(".error_type_select").live('change', function(){
                     var error_type = $(this);

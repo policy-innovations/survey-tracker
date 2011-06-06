@@ -134,7 +134,12 @@ INSTALLED_APPS = (
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
     'accounts.backend.ObjectPermBackend',
-)
+    )
+
+FILE_UPLOAD_HANDLERS = (
+        "django.core.files.uploadhandler.MemoryFileUploadHandler",
+        "django.core.files.uploadhandler.TemporaryFileUploadHandler",
+        )
 
 LOGIN_REDIRECT_URL = '/'
 

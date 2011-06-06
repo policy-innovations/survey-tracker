@@ -9,6 +9,7 @@
             var questions;
             var choices;
             var uid_list = new Array();
+            var extra_details = new Array();
             form_html = '<hr/><form action="" method="post" class="entry_form">';
             form_html += $('.entry_form:first').clone().html();
             form_html += '</form>';
@@ -52,11 +53,26 @@
             $.getJSON('/get-uid-list/'+role_id, function(data){
                     for(i=0;i<data.length;i++){
                     uid_list.push(String(data[i].fields.uid));
+                    extra_details.push(data[i].fields.extra_details);
                     }
                     $(".uid").each(function(){
                         $(this).autocomplete({source: uid_list});
+                        $(this).bind('autocompleteselect', function(event,ui){
+                            $(this).parent().find('.extra_details').remove();
+                            index = uid_list.indexOf(String($(this).val()));
+                            if (index != -1){
+                            $('<span class="extra_details" display="block" style="font-size:9px;line-height:50%;"><br/>'+ extra_details[index] + '</span>').insertAfter($(this));
+                            }
+                            });
+                        $(this).live('change', function(){
+                            $(this).parent().find('.extra_details').remove();
+                            index = uid_list.indexOf(String($(this).val()));
+                            if (index != -1){
+                            $('<span class="extra_details" display="block" style="font-size:9px; line-height:50%;"><br/>'+ extra_details[index] + '</span>').insertAfter($(this));
+                            }
+                            });
                         });
-                    });
+            });
 
 
             $('#date').datepicker({dateFormat:'yy-mm-dd', inline:true});
@@ -124,9 +140,9 @@ $('.uid').each(function(){
     });
 return true;
 } else {
-$(form).find('#errors').remove();
-$('<b style="color:red; display:block;" id="errors">Some errors in form.</b>').insertAfter($(form).find('.submit').parent());
-return false;
+    $(form).find('#errors').remove();
+    $('<b style="color:red; display:block;" id="errors">Some errors in form.</b>').insertAfter($(form).find('.submit').parent());
+    return false;
 }
 }
 });
