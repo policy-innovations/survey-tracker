@@ -5,3 +5,4 @@
 .*.swo
 settings.py
 *.sqlite
+static_deploy/
