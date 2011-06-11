@@ -5,11 +5,11 @@ from django.core.urlresolvers import reverse
 from django.forms.formsets import formset_factory
 from django.contrib.auth.decorators import login_required
 from django.utils.functional import curry
-from django.core.urlresolvers import reverse
 from datetime import date as _date
 from datetime import timedelta as _timedelta
-from main.forms import *
-from main.models import ErrorType, Role, Questionnaire, UIDStatus, Question
+from main.forms import ErrorForm, QuestionForm, UIDForm, \
+        UIDAssignmentForm, ImportUIDForm
+from main.models import ErrorType, Role, Questionnaire, UIDStatus
 import xlrd
 
 def home(request):

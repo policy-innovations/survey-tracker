@@ -1,11 +1,11 @@
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 from django.db.models import Q
-from datetime import date, timedelta
 from django.contrib.admin.widgets import FilteredSelectMultiple
 from mptt.forms import TreeNodeChoiceField
-from main.models import *
-import settings
+from main.models import UIDError, ErrorType, UIDQuestion, UIDStatus, \
+        Questionnaire , Question, Choice, Role
+
 import os
 
 class ExtFileField(forms.FileField):
@@ -108,7 +108,7 @@ class QuestionForm(forms.ModelForm):
         cleaned_data = self.cleaned_data
         try:
             c = cleaned_data['question']
-            return Question.objects.get(pk=int(self.cleaned_data['question']))
+            return Question.objects.get(pk=int(c))
         except:
             return None #If form is empty in formset, "None" is returned.
 
@@ -116,7 +116,7 @@ class QuestionForm(forms.ModelForm):
         cleaned_data = self.cleaned_data
         try:
             c = cleaned_data['selected_choice']
-            return Choice.objects.get(pk=int(self.cleaned_data['selected_choice']))
+            return Choice.objects.get(pk=int(c))
         except:
             raise forms.ValidationError('Please select a choice.')
 

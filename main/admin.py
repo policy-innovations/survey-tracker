@@ -3,7 +3,8 @@ from django.db.models import Q
 from django.contrib import admin
 
 from mptt.admin import MPTTModelAdmin
-from main.models import *
+from main.models import ErrorType, Role, Questionnaire, UIDStatus, Choice, \
+        Question
 from main.forms import QuestionnaireAdminForm
 
 from accounts.admin import ObjectPermissionInline, ObjectPermissionMixin
