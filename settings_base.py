@@ -147,10 +147,6 @@ LOGIN_REDIRECT_URL = '/'
 
 MPTT_ADMIN_LEVEL_INDENT = 20
 
-SOUTH_DATABASE_ADAPTERS = {
-   'default':"south.db.sqlite3",
-}
-
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
 # the site admins on every HTTP 500 error.
