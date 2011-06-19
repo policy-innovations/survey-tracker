@@ -45,9 +45,8 @@ class Role(MPTTModel):
     get_questionnaire.short_description = _('questionnaire')
 
     def managed_uids(self):
-        questionnaire_uids = self.get_questionnaire().uidstatus_set.all()
-        query = Q(role__in=self.get_descendants(include_self=True))
-        return questionnaire_uids.filter(query)
+        query = Q(role__in=self.get_children()) | Q(role=self)
+        return self.get_questionnaire().uidstatus_set.filter(query)
 
     def uids(self):
         '''
@@ -84,11 +83,10 @@ class Role(MPTTModel):
         questionnaire_uids = questionnaire.uidstatus_set.all()
 
         ancestors = self.get_ancestors(include_self=True)
-        assigned_ancestors = ancestors.filter(uidstatuses__isnull=False)
-        if assigned_ancestors:
-            return assigned_ancestors.latest('level').uidstatuses.all()
-
-        return questionnaire_uids.filter(role__isnull=True)
+        # Get all uids which are either assigned to any of ancestors
+        # or to no one
+        query =  Q(role__in=ancestors) | Q(role__isnull=True)
+        return questionnaire_uids.filter(query)
 
     uids.short_description = _('UID Statuses')
 
@@ -151,7 +149,7 @@ class UIDStatus(models.Model):
     questions = models.ManyToManyField(Question, null=True, blank=False,
             through='UIDQuestion')
     questionnaire = models.ForeignKey(Questionnaire)
-    role = models.ForeignKey(Role, blank=True, null=True,
+    role = TreeForeignKey(Role, blank=True, null=True,
                              verbose_name=_('main responsible person'),
                              related_name='uidstatuses')
 
@@ -167,6 +165,13 @@ class UIDStatus(models.Model):
 
     def __unicode__(self):
         return self.uid
+
+    def user(self):
+        return self.role.user
+
+    def done(self):
+        return True if self.completer else False
+    done.boolean = True
 
     def responsible_people(self):
         '''
@@ -212,7 +217,8 @@ def create_role(name, head=None, username=None):
         user = get_dummy_user(username)
     else:
         user = get_dummy_user(name)
-    return Role.objects.create(name=name, user=user, head=head)
+
+    return Role.objects.get_or_create(name=name, user=user, head=head)[0]
 
 def create_base_role_tree():
     superhead = create_role('A', username='test')
@@ -232,7 +238,7 @@ def create_base_role_tree():
 
     questionnaire, new = Questionnaire.objects.get_or_create(pk=1)
     if new:
-        questionnaire.name = 'TestQs'
+        questionnaire.name = 'TestQS'
         questionnaire.save()
     questionnaire.hierarchy = superhead
     questionnaire.save()

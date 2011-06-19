@@ -177,7 +177,7 @@ class UIDAssignmentForm(forms.Form):
                                           required=False,
                                           widget=FilteredSelectMultiple(
                                                     _('select UIDs'),
-                                                    True,
+                                                    False,
                                                  ))
 
     def __init__(self, role, *args, **kwargs):

@@ -67,7 +67,7 @@ class QuestionnaireAdmin(ObjectPermissionMixin, admin.ModelAdmin):
     inlines = [ObjectPermissionInline]
 
 class UIDStatusAdmin(admin.ModelAdmin):
-    list_display = ['uid', 'questionnaire', 'role', 'responsible_people']
+    list_display = ['uid', 'questionnaire', 'user', 'responsible_people', 'done']
 
 class ChoiceInline(admin.TabularInline):
     model = Choice
