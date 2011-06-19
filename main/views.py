@@ -1,3 +1,6 @@
+import math
+import xlrd
+
 from django.http import HttpResponse,HttpResponseRedirect, Http404
 from django.shortcuts import render, redirect
 from django.core import serializers
@@ -10,7 +13,6 @@ from datetime import timedelta as _timedelta
 from main.forms import ErrorForm, QuestionForm, UIDForm, \
         UIDAssignmentForm, ImportUIDForm
 from main.models import ErrorType, Role, Questionnaire, UIDStatus
-import xlrd
 
 def home(request):
     return render(request, 'main/home.html',)
@@ -176,6 +178,42 @@ def manage_sub_uids(request, role_id, sub_role):
         'manages':manages,
     }
     return render(request, 'main/manage_sub_uids.html', context)
+
+@login_required
+def auto_distribute_uids(request, role_id):
+    '''
+    TODO: Make this more cleaner, check for improvement scope
+    '''
+    role = Role.objects.get(id=role_id)
+
+    # Manager for uid statuses assigned to the role
+    all_uids = role.uidstatuses
+    if not request.user == role.user:
+        raise Http404
+
+    # List of ids for subordinates
+    subordinates = role.get_children().values_list('id', flat=True)
+    # List of ids for uid statuses
+    uids = all_uids.values_list('id', flat=True)
+
+    count = len(subordinates)
+    ratio = float(uids.count())/count
+
+    # UIDs per subordinate
+    u_p_s = int(math.ceil(ratio))
+
+    # Divide the ids list according to the number of UIDs per subordinate
+    divided_list = (uids[i:i+u_p_s] for i in xrange(0, len(uids), u_p_s))
+
+    for subordinate, uid_list in zip(subordinates, divided_list):
+        # Get all the uids which have id in the divided list
+        sub_uids = all_uids.filter(id__in=uid_list)
+        # Update the role of the uid statuses to the subordinate
+        sub_uids.update(role=subordinate)
+
+    return redirect(reverse('manage-uids', kwargs={
+                    'role_id':role_id,
+    }))
 
 @login_required
 def import_uids(request, role_id):

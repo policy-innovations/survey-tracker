@@ -197,7 +197,12 @@ class UIDAssignmentForm(forms.Form):
 
     def clean_csv(self):
         er_uids = []
-        csv = self.cleaned_data['csv'].replace(' ', '').split(',')
+        raw_csv = self.cleaned_data['csv'].replace(' ', '')
+
+        # csv contains nothing
+        if not raw_csv:
+            return
+        csv = raw_csv.split(',')
         uids_qs_list = self.fields['uids'].queryset.values_list('uid',
                                                                  flat=True)
         for uid in csv:
@@ -221,7 +226,7 @@ class UIDAssignmentForm(forms.Form):
         else:
             # No csv use the select box instead
             sub_new_uids = self.cleaned_data['uids']
-            sub_new_uids_list = sub_new_uids.values_list('id', flat=True)
+            sub_new_uids_list = sub_new_uids.values_list('id', flat=True) if sub_new_uids else None
 
         if sub_new_uids:
             manager_new_uids = concerned_uids.exclude(id__in = sub_new_uids_list)
@@ -230,8 +235,6 @@ class UIDAssignmentForm(forms.Form):
             manager_new_uids = concerned_uids
 
         manager_new_uids.update(role=self.role)
-
-        return True
 
 class QuestionnaireAdminForm(forms.ModelForm):
     hierarchy = forms.ModelChoiceField(queryset=Role.objects.filter(head__isnull=True))

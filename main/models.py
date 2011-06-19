@@ -165,7 +165,7 @@ class UIDStatus(models.Model):
 
     def __unicode__(self):
         role = unicode(self.role) or 'Unassigned'
-        return '%10s - %s' %(self.uid, role)
+        return '%s - %s' %(self.uid, role)
 
     def user(self):
         return self.role.user

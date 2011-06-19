@@ -4,16 +4,25 @@
 <a href="/">Home</a> >
 <a href="{% url manage-uids role.id %}">Manage UIDs</a>
 
-<p>You have responsibility for {{ role.managed_uids.count }} UIDs.</p>
+<p>
+    You have responsibility for {{ role.managed_uids.count }} UID{{ role.managed_uids.count|pluralize }}
+    of which {{ role.uidstatuses.count }} {{ role.uidstatuses.count|pluralize:"is,are" }}
+    yet to be divided in subordinates.
+</p>
 <h3>Manage subordinate responsibilities:</h3>
-{% if manages %}<a href=''>Automatically distribute equally</a>{% endif %}
 <table>
+<tr>
+    <th>Subordinate</th>
+    <th>UIDs assigned</th>
+</tr>
 {% for sub in role.get_children %}
 <tr>
     <td>{{ sub }}</td>
-    <td><a href="{% url manage-sub-uids role.id sub.id %}">Details</a></td>
+    <td>{{ sub.uidstatuses.count }}</td>
+    <td><a href="{% url manage-sub-uids role.id sub.id %}">Manage</a></td>
 </tr>
 {% endfor %}
 </table>
+{% if role.uidstatuses.all %}<a href='{% url auto-distribute-uids role.id %}'>Automatically distribute</a> the unassigned uids equally{% endif %}
 
 {% endblock %}
