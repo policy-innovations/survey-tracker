@@ -4,10 +4,7 @@
 <a href="/">Home</a> >
 <a href="{% url manage-uids role.id %}">Manage UIDs</a>
 
-<h3>You have responsibility for following UIDs:</h3>
-{% for uid in  role.uids %}
-{{ uid }}
-{% endfor %}
+<p>You have responsibility for {{ role.managed_uids.count }} UIDs.</p>
 <h3>Manage subordinate responsibilities:</h3>
 {% if manages %}<a href=''>Automatically distribute equally</a>{% endif %}
 <table>

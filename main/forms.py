@@ -176,13 +176,62 @@ class UIDAssignmentForm(forms.Form):
                                           label=_('Select UIDs'),
                                           required=False,
                                           widget=FilteredSelectMultiple(
-                                                    _('select UIDs'),
+                                                    _('UIDs'),
                                                     False,
                                                  ))
+    csv = forms.CharField(widget=forms.Textarea, required=False,
+                          label=_('Or paste comma separated values here'))
 
-    def __init__(self, role, *args, **kwargs):
+    class Media:
+        css = {
+            'all':['admin/css/widgets.css',
+                   'css/uid-manage-form.css'],
+        }
+        js = ['/admin/jsi18n/']
+
+    def __init__(self, role, subordinate, *args, **kwargs):
+        self.role = role
+        self.subordinate = subordinate
         super(UIDAssignmentForm, self).__init__(*args, **kwargs)
         self.fields['uids'].queryset = role.managed_uids()
+
+    def clean_csv(self):
+        er_uids = []
+        csv = self.cleaned_data['csv'].replace(' ', '').split(',')
+        uids_qs_list = self.fields['uids'].queryset.values_list('uid',
+                                                                 flat=True)
+        for uid in csv:
+            if uid not in uids_qs_list:
+                er_uids.append(uid)
+
+        if not er_uids:
+            return csv
+        else:
+            er_uids_str = ', '.join(er_uids)
+            raise forms.ValidationError(_('The following UIDs are unacceptable: %s' %(er_uids_str) ))
+
+    def assign(self):
+        concerned_uids = self.role.managed_uids()
+
+        # Check if any csv is posted first
+        if self.cleaned_data['csv']:
+            sub_new_uids_list = self.cleaned_data['csv']
+            # Get new uids queryset from the list obtained through csv
+            sub_new_uids = concerned_uids.filter(uid__in=sub_new_uids_list)
+        else:
+            # No csv use the select box instead
+            sub_new_uids = self.cleaned_data['uids']
+            sub_new_uids_list = sub_new_uids.values_list('id', flat=True)
+
+        if sub_new_uids:
+            manager_new_uids = concerned_uids.exclude(id__in = sub_new_uids_list)
+            sub_new_uids.update(role=self.subordinate)
+        else:
+            manager_new_uids = concerned_uids
+
+        manager_new_uids.update(role=self.role)
+
+        return True
 
 class QuestionnaireAdminForm(forms.ModelForm):
     hierarchy = forms.ModelChoiceField(queryset=Role.objects.filter(head__isnull=True))

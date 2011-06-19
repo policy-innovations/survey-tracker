@@ -19,3 +19,8 @@
     width: 270px !important;
     height: 17.2em;
 }
+
+textarea{
+    display:block;
+    width:450px;
+}

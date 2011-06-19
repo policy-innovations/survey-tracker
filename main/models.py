@@ -164,7 +164,8 @@ class UIDStatus(models.Model):
         verbose_name_plural=_('UID statuses')
 
     def __unicode__(self):
-        return self.uid
+        role = unicode(self.role) or 'Unassigned'
+        return '%10s - %s' %(self.uid, role)
 
     def user(self):
         return self.role.user
