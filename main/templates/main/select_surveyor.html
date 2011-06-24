@@ -1,13 +1,24 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h3>Select Surveyor</h3>
-<table>
+<a href="/">Home</a> >
+<a href="{% url select-surveyor role.get_questionnaire.id %}">Update UIDs status</a>
+
+<p>
+    You and your subordinates have responsibility of {{ pending_uids }} UID{{ pending_uids|pluralize }} yet to be updated
+</p>
+<h3>Update subordinates UIDs status:</h3>
+<table class="styled">
+    <tr>
+        <th>Surveyor</th>
+        <th>Completed</th>
+        <th>Not Completed</th>
+    </tr>
     {% for surveyor in surveyors %}
     <tr>
         <td>{{ surveyor.name }}</td>
-        <td><a href="{% url add-completed-entry surveyor.id %}">Add Completed Survey</a></td>
-        <td><a href="{% url add-uncompleted-entry surveyor.id %}">Add Uncompleted Survey</a></td>
+        <td><a href="{% url add-completed-entry surveyor.id %}">Add</a></td>
+        <td><a href="{% url add-uncompleted-entry surveyor.id %}">Add</a></td>
     </tr>
     {% endfor %}
 </table>

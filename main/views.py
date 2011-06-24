@@ -27,7 +27,11 @@ def select_surveyor(request, proj_pk):
             user=request.user)
     surveyors = role.get_leafnodes()
     return render(request, 'main/select_surveyor.html',
-            {'surveyors':surveyors})
+            {
+                'role':role,
+                'surveyors':surveyors,
+                'pending_uids': role.uids_count(),
+            })
 
 @login_required
 def add_completed_entry(request, role_id):
@@ -258,7 +262,7 @@ def import_uids(request, role_id):
                         uid_status.save()
                     except IntegrityError:
                         repeated.append(unicode(uid_status.uid))
-                result = "Success fully imported the uids, <br/> These uids were repeated: %s" %(', '.join(repeated))
+                result = "Successfully imported the uids. These uids were repeated in the document: %s" %(', '.join(repeated))
             return render(request, 'main/import_complete.html', {'result':result})
         else:
             return render(request, 'main/import_uids.html', {'role':role,

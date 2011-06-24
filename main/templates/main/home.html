@@ -1,14 +1,17 @@
 {% extends 'base.html' %}
 
 {% block content %}
-{% for role in user.role_set.all %}
-<h3>{{ role.get_questionnaire }}</h3>
-<ul>
-    <li><a href="{% url select-surveyor role.get_questionnaire.id %}">Add Entry</a></li>
-    <li><a href="{% url manage-uids role.id %}">Manage UIDs</a></li>
-    {% if role.is_root_node or request.user.is_superuser %}
-    <li><a href="{% url import-uids role.id %}">Import UIDs</a></li>
-    {% endif %}
-</ul>
+<h3>Your ongoing projects</h3>
+<table class="styled">
+    {% for role in user.role_set.all %}
+    <tr>
+        <td>{{ role.get_questionnaire }}</td>
+        <td><a href="{% url select-surveyor role.get_questionnaire.id %}">Update UIDs status</a></td>
+        <td><a href="{% url manage-uids role.id %}">Manage UIDs</a></td>
+        {% if role.is_root_node or request.user.is_superuser %}
+        <td><a href="{% url import-uids role.id %}">Import UIDs</a></td>
+        {% endif %}
+    </tr>
+</table>
 {% endfor %}
 {% endblock %}

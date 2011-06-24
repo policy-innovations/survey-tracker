@@ -134,6 +134,25 @@ fieldset{
     margin:2px 0;
 }
 
+.styled td{
+    background:#ddd;
+    padding: 5px 15px;
+    min-width:120px;
+    border: 1px solid #999;
+}
+
+.styled a, a.button{
+    text-decoration:none;
+    color:#183a7c;
+}
+
+a.button{
+    padding: 5px 15px;
+    background:#ddd;
+    border: 1px solid #999;
+    text-decoration:none;
+}
+
 #header{
     position:relative;
     padding: 8px 20px;

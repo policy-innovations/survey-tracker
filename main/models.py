@@ -88,7 +88,9 @@ class Role(MPTTModel):
         query =  Q(role__in=ancestors) | Q(role__isnull=True)
         return questionnaire_uids.filter(query)
 
-    uids.short_description = _('UID Statuses')
+    def uids_count(self):
+        return self.uids().count()
+    uids_count.short_description = _('UIDs')
 
 class Questionnaire(models.Model):
     name = models.CharField(_('name'), max_length=100)
