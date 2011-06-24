@@ -14,18 +14,11 @@
 function addForm(btn, prefix) {
     var formCount = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val());
     var formCountMax = parseInt($('#id_' + prefix + '-MAX_NUM_FORMS').val());
-    if (formCount == formCountMax ){
-        alert("You can'r add anymore forms.");
-        return false;
-    }
     var row = $('.dynamic-form:first').clone(true).get(0);
     $(row).removeAttr('id').insertAfter($('.dynamic-form:last')).children('.hidden').removeClass('hidden');
     $(row).children().not(':last').children().each(function() {
             updateElementIndex(this, prefix, formCount);
             //$(this).val('');
-            });
-    $(row).find('.delete-row').click(function() {
-            deleteForm(this, prefix);
             });
     $(row).find(".error_types").val('');
     $(row).find(".error_types").removeAttr('error_name');
@@ -35,7 +28,7 @@ function addForm(btn, prefix) {
 function deleteForm(btn, prefix) {
     var formCount = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val());
     if(formCount == 1){
-        alert("You can't remove anymore form.");
+        alert("You cannot remove this form.");
         return false;
     }
     $(btn).parents('.dynamic-form').remove();

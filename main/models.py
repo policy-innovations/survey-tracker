@@ -123,7 +123,7 @@ class Question(models.Model):
     questionnaire = models.ForeignKey(Questionnaire)
 
     def __unicode__(self):
-        return '%s' %(self.name.title())
+        return '%s' %(self.name)
 
     def get_choices(self):
         return Choice.objects.all().filter(question=self)
@@ -160,12 +160,11 @@ class UIDStatus(models.Model):
     date = models.DateField(_('date of completion'), blank=True, null=True)
 
     class Meta:
-        verbose_name =  _('UID status')
-        verbose_name_plural=_('UID statuses')
+        verbose_name =  _('UID')
 
     def __unicode__(self):
-        role = unicode(self.role) or 'Unassigned'
-        return '%s - %s' %(self.uid, role)
+        role = self.role or 'Unassigned'
+        return '%s - %s' %(self.uid, role.user)
 
     def user(self):
         return self.role.user

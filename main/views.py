@@ -2,6 +2,7 @@ import math
 import xlrd
 
 from django.http import HttpResponse,HttpResponseRedirect, Http404
+from django.db import IntegrityError
 from django.shortcuts import render, redirect
 from django.core import serializers
 from django.core.urlresolvers import reverse
@@ -219,6 +220,7 @@ def auto_distribute_uids(request, role_id):
 def import_uids(request, role_id):
     role = Role.objects.get(id=role_id)
     questionnaire = role.get_questionnaire()
+    repeated = []
     if not request.user == role.user:
         raise Http404
     extra_details_name = []
@@ -228,28 +230,36 @@ def import_uids(request, role_id):
             input_excel = request.FILES['file']
             book = xlrd.open_workbook(file_contents=input_excel.read())
             sheet1 = book.sheet_by_index(0)
+            all_roles = questionnaire.hierarchy.get_descendants(include_self=True)
             for rownum in range(sheet1.nrows):
                 row = sheet1.row_values(rownum)
                 if rownum is 0:
-                    extra_details_name = row[1:]
+                    extra_details_name = row[2:]
                 else:
                     uid = row[0]
+                    person = row[1]
                     try:
                         uid = str(int(uid))
                     except:
                         pass
                     uid_status = UIDStatus(uid=uid,
                             questionnaire=questionnaire)
+                    try:
+                        role = all_roles.get(user__username=person)
+                        uid_status.role = role
+                    except Role.DoesNotExist:
+                        role = None
+
                     extra_details = ''
-                    for i in range(len(row[1:])):
+                    for i in range(len(row[2:])):
                         extra_details = extra_details + extra_details_name[i] + ':' + row[i+1] + '<br/>'
                     uid_status.extra_details = extra_details
                     try:
                         uid_status.save()
-                        print uid_status
-                    except:
-                        pass
-            return HttpResponse("Success")
+                    except IntegrityError:
+                        repeated.append(unicode(uid_status.uid))
+                result = "Success fully imported the uids, <br/> These uids were repeated: %s" %(', '.join(repeated))
+            return render(request, 'main/import_complete.html', {'result':result})
         else:
             return render(request, 'main/import_uids.html', {'role':role,
                 'form':form})
