@@ -52,7 +52,7 @@ class RoleAdmin(MPTTModelAdmin):
         fields = list(super(RoleAdmin, self).get_readonly_fields(request,
                                                                  obj))
         if (not request.user.is_superuser) and request.user==obj.user:
-                fields += ['head', 'user', 'questionnaire']
+                fields += ['head', 'user', 'get_questionnaire']
         return tuple(fields)
 
     def get_form(self, request, obj=None):
