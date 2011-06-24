@@ -163,8 +163,8 @@ class UIDStatus(models.Model):
         verbose_name =  _('UID')
 
     def __unicode__(self):
-        role = self.role or 'Unassigned'
-        return '%s - %s' %(self.uid, role.user)
+        role = self.role.user if self.role else 'Unassigned'
+        return '%s - %s' %(self.uid, role)
 
     def user(self):
         return self.role.user
