@@ -56,7 +56,7 @@
       "name": "A",
       "level": 0,
       "lft": 1,
-      "user": 2,
+      "user": 3,
       "tree_id": 1
     }
   },
@@ -69,7 +69,7 @@
       "name": "B",
       "level": 1,
       "lft": 2,
-      "user": 4,
+      "user": 2,
       "tree_id": 1
     }
   },
@@ -160,7 +160,7 @@
       "name": "G",
       "level": 2,
       "lft": 15,
-      "user": 11,
+      "user": 1,
       "tree_id": 1
     }
   },
@@ -195,45 +195,44 @@
     "model": "main.questionnaire",
     "fields": {
       "hierarchy": 1,
-      "error_types": [],
+      "error_types": [
+        1,
+        3
+      ],
       "name": "TestQS",
       "users": []
     }
   },
   {
     "pk": 1,
-    "model": "main.uidstatus",
+    "model": "main.question",
     "fields": {
-      "extra_details": "",
-      "uid": "213123",
-      "role": 1,
-      "date": null,
       "questionnaire": 1,
-      "completer": null
+      "name": "Child's Age"
+    }
+  },
+  {
+    "pk": 1,
+    "model": "main.choice",
+    "fields": {
+      "question": 1,
+      "name": "3"
     }
   },
   {
     "pk": 2,
-    "model": "main.uidstatus",
+    "model": "main.choice",
     "fields": {
-      "extra_details": "",
-      "uid": "2135234",
-      "role": 8,
-      "date": "2011-06-17",
-      "questionnaire": 1,
-      "completer": 4
+      "question": 1,
+      "name": "4"
     }
   },
   {
     "pk": 3,
-    "model": "main.uidstatus",
+    "model": "main.choice",
     "fields": {
-      "extra_details": "",
-      "uid": "124342152",
-      "role": 2,
-      "date": null,
-      "questionnaire": 1,
-      "completer": null
+      "question": 1,
+      "name": "5"
     }
   }
 ]
