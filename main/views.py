@@ -166,9 +166,8 @@ def manage_sub_uids(request, role_id, sub_role):
         form = UIDAssignmentForm(role, subordinate, request.POST)
         if form.is_valid():
             form.assign()
-            return redirect(reverse('manage-sub-uids', kwargs={
+            return redirect(reverse('manage-uids', kwargs={
                     'role_id':role_id,
-                    'sub_role':sub_role,
                 }))
     else:
         form = UIDAssignmentForm(role, subordinate,

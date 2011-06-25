@@ -193,7 +193,7 @@ class UIDAssignmentForm(forms.Form):
         self.role = role
         self.subordinate = subordinate
         super(UIDAssignmentForm, self).__init__(*args, **kwargs)
-        self.fields['uids'].queryset = role.managed_uids().pending()
+        self.fields['uids'].queryset = role.managed_uids().pending().filter(role__in=[role, subordinate])
 
     def clean_csv(self):
         er_uids = []
@@ -216,7 +216,7 @@ class UIDAssignmentForm(forms.Form):
             raise forms.ValidationError(_('The following UIDs are unacceptable: %s' %(er_uids_str) ))
 
     def assign(self):
-        concerned_uids = self.role.managed_uids()
+        concerned_uids = self.fields['uids'].queryset
 
         # Check if any csv is posted first
         if self.cleaned_data['csv']:
