@@ -193,7 +193,7 @@ class UIDAssignmentForm(forms.Form):
         self.role = role
         self.subordinate = subordinate
         super(UIDAssignmentForm, self).__init__(*args, **kwargs)
-        self.fields['uids'].queryset = role.managed_uids()
+        self.fields['uids'].queryset = role.managed_uids().filter(completer__isnull=True)
 
     def clean_csv(self):
         er_uids = []
@@ -229,7 +229,7 @@ class UIDAssignmentForm(forms.Form):
             sub_new_uids_list = sub_new_uids.values_list('id', flat=True) if sub_new_uids else None
 
         if sub_new_uids:
-            manager_new_uids = concerned_uids.exclude(id__in = sub_new_uids_list)
+            manager_new_uids = self.role.uidstatuses.exclude(id__in = sub_new_uids_list)
             sub_new_uids.update(role=self.subordinate)
         else:
             manager_new_uids = concerned_uids

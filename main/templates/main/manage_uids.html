@@ -5,11 +5,13 @@
 <a class="button" href="{% url manage-uids role.id %}">Manage UIDs</a>
 
 <p>
-    You have responsibility for {{ role.managed_uids.count }} UID{{ role.managed_uids.count|pluralize }}
-    of which {{ role.uidstatuses.count }} {{ role.uidstatuses.count|pluralize:"is,are" }}
-    yet to be divided in your subordinates.
+    You have responsibility for managing {{ role.managed_uids.count }} UID
+    {{ role.managed_uids.count|pluralize }} of which
+    {{ role.uids_assign_pending }}
+    {{ role.uids_assign_pending|pluralize:"is,are" }} yet to be divided in
+    your subordinates.
 </p>
-<h3>Assign UID management to subordinates:</h3>
+<h3>Distribute UID management to subordinates:</h3>
 <table class="styled">
     <tr>
         <th>Subordinate</th>

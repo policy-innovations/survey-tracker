@@ -48,6 +48,9 @@ class Role(MPTTModel):
         query = Q(role__in=self.get_children()) | Q(role=self)
         return self.get_questionnaire().uidstatus_set.filter(query)
 
+    def uids_assign_pending(self):
+        return self.uidstatuses.filter(completer__isnull=True).count()
+
     def uids(self):
         '''
         This fetches the list of uids which are under a role's
@@ -88,6 +91,9 @@ class Role(MPTTModel):
         query =  Q(role__in=ancestors) | Q(role__isnull=True)
         return questionnaire_uids.filter(query)
 
+    def pending_uids(self):
+        return self.uids().filter(completer__isnull=True)
+
     def uids_count(self):
         return self.uids().count()
     uids_count.short_description = _('UIDs')
@@ -118,7 +124,7 @@ class Questionnaire(models.Model):
         return self.uidstatus_set.filter(completer__isnull=False).count()
 
     def completion(self):
-        return 100 * self.done_uids()/self.total_uids()
+        return 100 * self.done_uids()/self.total_uids() if self.total_uids() else 0
 
 class Question(models.Model):
     '''

@@ -120,8 +120,8 @@ def add_uncompleted_entry(request, proj_pk, role_id):
         if error_formset.is_valid():
             for form in error_formset:
                 form.save()
-            return HttpResponseRedirect(reverse('add-uncompleted-entry-done',
-                kwargs={'role_id':role.id}))
+            return redirect(reverse('update-uids',
+                            kwargs={'proj_pk':proj_pk}))
         else:
             return render(request, 'main/add_uncompleted_entry.html',
                     {'uid_form':uid_form, 'error_formset':error_formset,
