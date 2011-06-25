@@ -155,8 +155,8 @@ return true;
 {% endblock %}
 {% block content %}
 <a class="button" href="/">Home</a> >
-<a class="button" href="{% url select-surveyor role.get_questionnaire.id %}">Update UIDs status</a> >
-<a class="button" href="{% url add-completed-entry role.id %}">{{ role }}</a>
+<a class="button" href="{% url update-uids role.get_questionnaire.id %}">Update UIDs status</a> >
+<a class="button" href="{% url add-completed-entry role.get_questionnaire.id role.id %}">{{ role }}</a>
 
 <h3>Add Completed Surveys</h3>
 <table>

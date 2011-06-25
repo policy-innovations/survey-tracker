@@ -19,14 +19,14 @@ def home(request):
     return render(request, 'main/home.html',)
 
 @login_required
-def select_surveyor(request, proj_pk):
+def update_uids(request, proj_pk):
     if not request.user.is_authenticated():
         raise Http404
     questionnaire = Questionnaire.objects.get(pk=proj_pk)
     role = questionnaire.hierarchy.get_descendants(include_self=True).get(
             user=request.user)
     surveyors = role.get_leafnodes()
-    return render(request, 'main/select_surveyor.html',
+    return render(request, 'main/update_uids.html',
             {
                 'role':role,
                 'surveyors':surveyors,
@@ -34,7 +34,7 @@ def select_surveyor(request, proj_pk):
             })
 
 @login_required
-def add_completed_entry(request, role_id):
+def add_completed_entry(request, proj_pk, role_id):
     role = Role.objects.get(id=role_id)
     questionnaire = role.get_questionnaire()
     questions = questionnaire.get_questions()
@@ -97,7 +97,7 @@ def add_completed_entry_done(request, role_id):
     return render(request, 'main/add_completed_entry_done.html', {'role':role})
 
 @login_required
-def add_uncompleted_entry(request, role_id):
+def add_uncompleted_entry(request, proj_pk, role_id):
     role = Role.objects.get(id=role_id)
     ErrorFormset = formset_factory(ErrorForm, extra=1,
             max_num = len(ErrorType.objects.all().filter(level=0)))

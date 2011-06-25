@@ -13,7 +13,7 @@
 </table>
 <p>
     <h5>Your Tasks:</h5>
-    <a class="button" href="{% url select-surveyor role.get_questionnaire.id %}">Update UIDs status</a>
+    <a class="button" href="{% url update-uids role.get_questionnaire.id %}">Update UIDs status</a>
     <a class="button" href="{% url manage-uids role.id %}">Manage UIDs</a>
     {% if role.is_root_node or request.user.is_superuser %}
     <a class="button" href="{% url import-uids role.id %}">Import UIDs</a>

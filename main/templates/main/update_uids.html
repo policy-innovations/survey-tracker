@@ -2,7 +2,7 @@
 
 {% block content %}
 <a class="button" href="/">Home</a> >
-<a class="button" href="{% url select-surveyor role.get_questionnaire.id %}">Update UIDs status</a>
+<a class="button" href="{% url update-uids role.get_questionnaire.id %}">Update UIDs status</a>
 
 <p>
     You and your subordinates have responsibility of {{ pending_uids }} UID{{ pending_uids|pluralize }} yet to be updated
@@ -17,8 +17,8 @@
     {% for surveyor in surveyors %}
     <tr>
         <td>{{ surveyor.name }}</td>
-        <td><a class="button" href="{% url add-completed-entry surveyor.id %}">Add</a></td>
-        <td><a class="button" href="{% url add-uncompleted-entry surveyor.id %}">Add</a></td>
+        <td><a class="button" href="{% url add-completed-entry role.get_questionnaire.id surveyor.id %}">Add</a></td>
+        <td><a class="button" href="{% url add-uncompleted-entry role.get_questionnaire.id surveyor.id %}">Add</a></td>
     </tr>
     {% endfor %}
 </table>
