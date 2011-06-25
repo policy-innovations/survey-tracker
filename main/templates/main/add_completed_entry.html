@@ -154,10 +154,14 @@ return true;
 <link rel='stylesheet' href="{{ STATIC_URL }}css/jquery-ui-1.8.13.custom.css" type = "text/css"/>
 {% endblock %}
 {% block content %}
+<a class="button" href="/">Home</a> >
+<a class="button" href="{% url select-surveyor role.get_questionnaire.id %}">Update UIDs status</a> >
+<a class="button" href="{% url add-completed-entry role.id %}">{{ role }}</a>
+
 <h3>Add Completed Surveys</h3>
 <table>
     <tr>
-        <th>Name of Surveyor:</th>
+        <th>Surveyor:</th>
         <td>{{ role.name }}</td>
     </tr>
     <tr>

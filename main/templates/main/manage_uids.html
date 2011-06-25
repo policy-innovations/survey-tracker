@@ -1,15 +1,15 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<a href="/">Home</a> >
-<a href="{% url manage-uids role.id %}">Manage UIDs</a>
+<a class="button" href="/">Home</a> >
+<a class="button" href="{% url manage-uids role.id %}">Manage UIDs</a>
 
 <p>
     You have responsibility for {{ role.managed_uids.count }} UID{{ role.managed_uids.count|pluralize }}
     of which {{ role.uidstatuses.count }} {{ role.uidstatuses.count|pluralize:"is,are" }}
     yet to be divided in your subordinates.
 </p>
-<h3>Manage subordinate responsibilities:</h3>
+<h3>Assign UID management to subordinates:</h3>
 <table class="styled">
     <tr>
         <th>Subordinate</th>
@@ -19,7 +19,7 @@
     <tr>
         <td>{{ sub }}</td>
         <td>{{ sub.uidstatuses.count }}</td>
-        <td><a href="{% url manage-sub-uids role.id sub.id %}">Manage</a></td>
+        <td><a class="button" href="{% url manage-sub-uids role.id sub.id %}">Manage</a></td>
     </tr>
     {% endfor %}
 </table>

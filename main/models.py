@@ -111,6 +111,15 @@ class Questionnaire(models.Model):
     def get_questions(self):
         return Question.objects.all().filter(questionnaire=self)
 
+    def total_uids(self):
+        return self.uidstatus_set.count()
+
+    def done_uids(self):
+        return self.uidstatus_set.filter(completer__isnull=False).count()
+
+    def completion(self):
+        return 100 * self.done_uids()/self.total_uids()
+
 class Question(models.Model):
     '''
     Extra multiple choice question to be asked if survey was completed.

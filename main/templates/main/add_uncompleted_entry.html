@@ -238,7 +238,11 @@ function deleteForm(btn, prefix) {
 <link rel='stylesheet' href="{{ STATIC_URL }}css/jquery-ui-1.8.13.custom.css" type = "text/css"/>
 {% endblock %}
 {% block content %}
-<h3>Add Uncompleted Surveys</h3>
+<a class="button" href="/">Home</a> >
+<a class="button" href="{% url select-surveyor role.get_questionnaire.id %}">Update UIDs status</a> >
+<a class="button" href="{% url add-uncompleted-entry role.id %}">{{ role }}</a>
+
+<h3>Add Not Completed Surveys</h3>
 <form action="" method="post" id="entry_form">
     {{ error_formset.management_form }}
     <table>
@@ -270,7 +274,7 @@ function deleteForm(btn, prefix) {
             <td><a id="remove-{{ form.prefix }}-row" href="javascript:void(0)" class="delete-row"><img src="{{ STATIC_URL }}admin/img/admin/icon_deletelink.gif" title="Remove this form"/></a></td>
         </tr>
         {% endfor %}
-        <tr class='no-border'><td ><a href="javascript:void(0)" class="add-row"><img src="{{ STATIC_URL }}admin/img/admin/icon_addlink.gif" title="Add another form"/></a></td></tr>
+        <tr class='no-border'><td>Add Error <a href="javascript:void(0)" class="add-row"><img src="{{ STATIC_URL }}admin/img/admin/icon_addlink.gif" title="Add another form"/></a></td></tr>
         <tr class="no-border"><td><input type="submit" value="Submit" id="submit"/></td><td>{% csrf_token %}</td></tr>
     </table>
 </form>

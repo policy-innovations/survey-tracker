@@ -1,17 +1,24 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h3>Your ongoing projects</h3>
+<h2>Your Current Projects</h2>
+{% for role in user.role_set.all %}
+<h3>{{ role.get_questionnaire }}</h3>
+
 <table class="styled">
-    {% for role in user.role_set.all %}
     <tr>
-        <td>{{ role.get_questionnaire }}</td>
-        <td><a href="{% url select-surveyor role.get_questionnaire.id %}">Update UIDs status</a></td>
-        <td><a href="{% url manage-uids role.id %}">Manage UIDs</a></td>
-        {% if role.is_root_node or request.user.is_superuser %}
-        <td><a href="{% url import-uids role.id %}">Import UIDs</a></td>
-        {% endif %}
+        <td>{{ role.get_questionnaire.total_uids }} UID{{ role.get_questionnaire.total_uids|pluralize }} total</td>
+        <td>{{ role.get_questionnaire.completion }} % done</td>
     </tr>
 </table>
+<p>
+    <h5>Your Tasks:</h5>
+    <a class="button" href="{% url select-surveyor role.get_questionnaire.id %}">Update UIDs status</a>
+    <a class="button" href="{% url manage-uids role.id %}">Manage UIDs</a>
+    {% if role.is_root_node or request.user.is_superuser %}
+    <a class="button" href="{% url import-uids role.id %}">Import UIDs</a>
+    {% endif %}
+</p>
+<hr/>
 {% endfor %}
 {% endblock %}
