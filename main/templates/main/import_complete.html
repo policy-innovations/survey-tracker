@@ -1,5 +1,8 @@
 {% extends 'base.html' %}
 {% block content %}
+<a class="button" href="/">Home</a> >
+<a class="button" href="{% url import-uids role.id %}">Import UIDs</a>
+
 <h3>Import UIDs</h3>
 <p>
     {{ result }}

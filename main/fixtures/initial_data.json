@@ -147,7 +147,7 @@
       "name": "C",
       "level": 1,
       "lft": 14,
-      "user": 10,
+      "user": 14,
       "tree_id": 1
     }
   },
@@ -233,6 +233,60 @@
     "fields": {
       "question": 1,
       "name": "5"
+    }
+  },
+  {
+    "pk": 1,
+    "model": "main.uidstatus",
+    "fields": {
+      "extra_details": "",
+      "uid": "1",
+      "role": 3,
+      "date": null,
+      "questionnaire": 1,
+      "completer": null
+    }
+  },
+  {
+    "pk": 2,
+    "model": "main.uidstatus",
+    "fields": {
+      "extra_details": "",
+      "uid": "2",
+      "role": 5,
+      "date": null,
+      "questionnaire": 1,
+      "completer": null
+    }
+  },
+  {
+    "pk": 3,
+    "model": "main.uidstatus",
+    "fields": {
+      "extra_details": "",
+      "uid": "3",
+      "role": null,
+      "date": "2011-06-23",
+      "questionnaire": 1,
+      "completer": 10
+    }
+  },
+  {
+    "pk": 1,
+    "model": "main.uiderror",
+    "fields": {
+      "etype": 2,
+      "uid_status": 2,
+      "details": ""
+    }
+  },
+  {
+    "pk": 2,
+    "model": "main.uiderror",
+    "fields": {
+      "etype": 3,
+      "uid_status": 3,
+      "details": ""
     }
   }
 ]

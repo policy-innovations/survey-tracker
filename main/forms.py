@@ -193,7 +193,7 @@ class UIDAssignmentForm(forms.Form):
         self.role = role
         self.subordinate = subordinate
         super(UIDAssignmentForm, self).__init__(*args, **kwargs)
-        self.fields['uids'].queryset = role.managed_uids().filter(completer__isnull=True)
+        self.fields['uids'].queryset = role.managed_uids().pending()
 
     def clean_csv(self):
         er_uids = []
