@@ -3,6 +3,7 @@
 {% block content %}
 <h2>Your Current Surveys</h2>
 {% for role in user.role_set.all %}
+{% if role.get_questionnaire %}
 <h3>{{ role.get_questionnaire }}</h3>
 
 <table class="styled">
@@ -21,5 +22,6 @@
     <a class="button" href="">View Detailed Status</a>
 </p>
 <hr/>
+{% endif %}
 {% endfor %}
 {% endblock %}

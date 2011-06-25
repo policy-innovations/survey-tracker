@@ -100,7 +100,6 @@ class Role(MPTTModel):
 
     def uids_count(self):
         return self.uids().count()
-    uids_count.short_description = _('UIDs')
 
 class Questionnaire(models.Model):
     name = models.CharField(_('name'), max_length=100)
@@ -114,6 +113,9 @@ class Questionnaire(models.Model):
 
     def __unicode__(self):
         return self.name.title()
+
+    def get_descendants(self):
+        return self.hierarchy.get_decendants(include_self=True)
 
     def get_leafnodes(self, inc_self=True):
         return self.hierarchy.get_leafnodes(include_self=inc_self)
