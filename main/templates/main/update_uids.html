@@ -17,7 +17,7 @@
         <td>{{ surveyor.name }}</td>
         <td><a class="button" href="{% url add-completed-entry role.get_questionnaire.id surveyor.id %}">Add</a></td>
         <td><a class="button" href="{% url add-uncompleted-entry role.get_questionnaire.id surveyor.id %}">Add</a></td>
-        <td>{{ surveyor.pending_uids.count }}</td>
+        <td>{{ surveyor.uids.pending.count }}</td>
     </tr>
     {% endfor %}
 </table>

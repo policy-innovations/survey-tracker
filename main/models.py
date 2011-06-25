@@ -1,11 +1,21 @@
 from django.db import models
 from django.db.models import Q
+from django.db.models.query import QuerySet
 from django.utils.translation import ugettext_lazy as _
 
 from django.contrib.auth.models import User
 
 from mptt.models import MPTTModel
 from mptt.fields import TreeForeignKey
+
+class QuerySetManager(models.Manager):
+
+    def get_query_set(self):
+        return self.model.QuerySet(self.model)
+    def __getattr__(self, name):
+        return getattr(self.get_query_set(), name)
+
+    use_for_related_fields = True
 
 class ErrorType(MPTTModel):
     '''
@@ -48,9 +58,6 @@ class Role(MPTTModel):
         query = Q(role__in=self.get_children()) | Q(role=self)
         return self.get_questionnaire().uidstatus_set.filter(query)
 
-    def uids_assign_pending(self):
-        return self.uidstatuses.filter(completer__isnull=True).count()
-
     def uids(self):
         '''
         This fetches the list of uids which are under a role's
@@ -90,9 +97,6 @@ class Role(MPTTModel):
         # or to no one
         query =  Q(role__in=ancestors) | Q(role__isnull=True)
         return questionnaire_uids.filter(query)
-
-    def pending_uids(self):
-        return self.uids().filter(completer__isnull=True)
 
     def uids_count(self):
         return self.uids().count()
@@ -176,8 +180,14 @@ class UIDStatus(models.Model):
             verbose_name=_('who did it?'))
     date = models.DateField(_('date of completion'), blank=True, null=True)
 
+    objects = QuerySetManager()
+
     class Meta:
         verbose_name =  _('UID')
+
+    class QuerySet(QuerySet):
+        def pending(self):
+            return self.filter(completer__isnull=True)
 
     def __unicode__(self):
         role = self.role.user if self.role else 'Unassigned'
