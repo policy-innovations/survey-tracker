@@ -1,3 +1,5 @@
+import os
+
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 from django.db.models import Q
@@ -6,7 +8,6 @@ from mptt.forms import TreeNodeChoiceField
 from main.models import UIDError, ErrorType, UIDQuestion, UIDStatus, \
         Questionnaire , Question, Choice, Role
 
-import os
 
 class ExtFileField(forms.FileField):
     '''
@@ -78,6 +79,52 @@ class ErrorForm(forms.ModelForm):
         if commit:
             m.save()
         return m
+
+class UIDCompleteForm(forms.ModelForm):
+
+    def __init__(self, role, data={}, initial = {}, instance=None, *args, **kwargs):
+        self.role = role
+        questionnaire = role.get_questionnaire()
+        self.uids_set = UIDStatus.objects.filter(questionnaire=questionnaire)
+
+        if data.get('uid', False):
+            instance = self.uids_set.get(uid=data['uid'])
+
+        super(UIDCompleteForm, self).__init__(data=data, initial=initial,
+                                              instance=instance, *args,
+                                              **kwargs)
+
+        self.fields['uid'].queryset = self.uids_set
+        for question in questionnaire.question_set.all():
+            self.fields[question.field_name] = forms.ModelChoiceField(label=_(question.name),
+                                                                      queryset=question.get_choices(),
+                                                                      initial=data.get(question.field_name))
+
+    def save(self):
+        uid = super(UIDCompleteForm, self).save()
+
+        for question in self.role.get_questionnaire().question_set.all():
+            choice = self.cleaned_data[question.field_name]
+            #choice = question.choice_set.filter(id=choice_id)
+            UIDQuestion.objects.create(uid_status=uid, question=question,
+                                               selected_choice=choice)
+
+        return uid
+
+    class Meta:
+        model = UIDStatus
+        exclude = ('questions', 'questionnaire', 'role', 'extra_details',
+                   'errors',)
+        widgets = {
+            #'date': forms.HiddenInput(),
+        }
+
+    class Media:
+        css = {
+            'all':['css/jquery-ui-1.8.13.custom.css']
+        }
+        js = ['js/jquery.formset.min.js',
+              'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js']
 
 class QuestionForm(forms.ModelForm):
     '''
@@ -245,3 +292,11 @@ class QuestionnaireAdminForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(QuestionnaireAdminForm, self).__init__(*args, **kwargs)
+
+class QuestionAdminForm(forms.ModelForm):
+    field_name = forms.RegexField(label=_("Field Name"), max_length=30, regex=r'^[\w]+$',
+        help_text = _("Required. 30 characters or fewer. Letters, digits and _ only."),
+        error_messages = {'invalid': _("This value may contain only letters, numbers and _.")})
+
+    class Meta:
+        model=Question

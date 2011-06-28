@@ -115,7 +115,7 @@ class Questionnaire(models.Model):
         return self.name.title()
 
     def get_descendants(self):
-        return self.hierarchy.get_decendants(include_self=True)
+        return self.hierarchy.get_descendants(include_self=True)
 
     def get_leafnodes(self, inc_self=True):
         return self.hierarchy.get_leafnodes(include_self=inc_self)
@@ -143,13 +143,14 @@ class Question(models.Model):
     3. 5
     '''
     name = models.CharField(_('name'), max_length=100)
+    field_name = models.CharField(_('field_name'), max_length=40)
     questionnaire = models.ForeignKey(Questionnaire)
 
     def __unicode__(self):
         return '%s' %(self.name)
 
     def get_choices(self):
-        return Choice.objects.all().filter(question=self)
+        return self.choice_set.all()
 
 class Choice(models.Model):
     name = models.CharField(_('name'), max_length=100)

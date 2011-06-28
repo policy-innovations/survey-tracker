@@ -5,7 +5,7 @@ from django.contrib import admin
 from mptt.admin import MPTTModelAdmin
 from main.models import ErrorType, Role, Questionnaire, UIDStatus, Choice, \
         Question
-from main.forms import QuestionnaireAdminForm
+from main.forms import QuestionnaireAdminForm, QuestionAdminForm
 
 from accounts.admin import ObjectPermissionInline, ObjectPermissionMixin
 
@@ -75,6 +75,7 @@ class ChoiceInline(admin.TabularInline):
 
 class QuestionAdmin(admin.ModelAdmin):
     inlines = [ChoiceInline]
+    form = QuestionAdminForm
 
 admin.site.register(Questionnaire, QuestionnaireAdmin)
 admin.site.register(ErrorType, ErrorTypeAdmin)
