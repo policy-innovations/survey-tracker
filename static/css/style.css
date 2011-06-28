@@ -109,7 +109,27 @@ fieldset{
     background:#aaa;
 }
 
-.bg-2{
+.hidden{
+    display:none;
+}
+
+.add-row, .delete-row{
+    background:url('../admin/img/admin/icon_addlink.gif') no-repeat right;
+    padding:0 15px 0 0;
+    text-transform: capitalize
+}
+
+.delete-row{
+    background:url('../admin/img/admin/icon_deletelink.gif') no-repeat right;
+    margin-left: 10px;
+}
+
+#formsetForm{
+    width: 80%;
+}
+
+#formsetForm table{
+    width: 70%;
 }
 
 #submenu{

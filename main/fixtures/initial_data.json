@@ -208,6 +208,7 @@
     "model": "main.question",
     "fields": {
       "questionnaire": 1,
+      "field_name": "child_age",
       "name": "Child's Age"
     }
   },
@@ -266,9 +267,57 @@
       "extra_details": "",
       "uid": "3",
       "role": null,
-      "date": "2011-06-23",
+      "date": null,
       "questionnaire": 1,
-      "completer": 10
+      "completer": null
+    }
+  },
+  {
+    "pk": 4,
+    "model": "main.uidstatus",
+    "fields": {
+      "extra_details": "",
+      "uid": "4",
+      "role": 2,
+      "date": null,
+      "questionnaire": 1,
+      "completer": null
+    }
+  },
+  {
+    "pk": 5,
+    "model": "main.uidstatus",
+    "fields": {
+      "extra_details": "",
+      "uid": "5",
+      "role": 2,
+      "date": null,
+      "questionnaire": 1,
+      "completer": null
+    }
+  },
+  {
+    "pk": 6,
+    "model": "main.uidstatus",
+    "fields": {
+      "extra_details": "",
+      "uid": "6",
+      "role": 5,
+      "date": null,
+      "questionnaire": 1,
+      "completer": null
+    }
+  },
+  {
+    "pk": 7,
+    "model": "main.uidstatus",
+    "fields": {
+      "extra_details": "",
+      "uid": "7",
+      "role": 6,
+      "date": null,
+      "questionnaire": 1,
+      "completer": null
     }
   },
   {

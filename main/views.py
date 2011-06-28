@@ -12,7 +12,7 @@ from django.utils.functional import curry
 from datetime import date as _date
 from datetime import timedelta as _timedelta
 from main.forms import ErrorForm, QuestionForm, UIDForm, \
-        UIDAssignmentForm, ImportUIDForm
+        UIDAssignmentForm, ImportUIDForm, UIDCompleteForm
 from main.models import ErrorType, Role, Questionnaire, UIDStatus
 
 def home(request):
@@ -32,6 +32,27 @@ def update_uids(request, proj_pk):
                 'surveyors':surveyors,
                 'pending_uids': role.uids_count(),
             })
+
+
+@login_required
+def update_completed(request, proj_pk):
+    questionnaire = Questionnaire.objects.get(pk=proj_pk)
+    try:
+        role = questionnaire.get_descendants().get(user=request.user)
+    except Role.DoesNotExist:
+        raise Http404
+
+    UIDCompleteFormset = formset_factory(UIDCompleteForm, extra=1)
+    UIDCompleteFormset.form = staticmethod(curry(UIDCompleteForm, role))
+    formset = UIDCompleteFormset()
+
+    ctx = {
+        'formset':formset,
+        'role':role,
+    }
+    return render(request, 'main/update_completed.html', ctx)
+
+
 
 @login_required
 def add_completed_entry(request, proj_pk, role_id):

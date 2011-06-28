@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% load adminmedia %}
+{% block head %}
+{{ formset.media }}
+<script type="text/javascript">
+    // Updates the dates in formset forms
+    function updateDates(){
+        date_input = $("#formsetDate");
+        date_fields = $('[id$="-date"]');
+        date_fields.datepicker({dateFormat:'yy-mm-dd', inline:true});
+        date_empty_fields = $('[id$="-date"]');
+
+        // For each form date field add the global date value if none is
+        // already present
+        date_fields.each(function(index){
+            if (!this.value){
+                this.value = date_input.val();
+            };
+        });
+    };
+
+    $(function() {
+        $('#formsetForm tbody tr').formset({'added':updateDates});
+    });
+
+    $(function() {
+        var now = new Date();
+
+        var curr_date = now.getDate();
+        var curr_month = now.getMonth();
+        var curr_year = now.getFullYear();
+
+        var formatted_date = curr_year + "-" + curr_month + "-" + curr_date
+
+        date_input = $('#formsetDate')
+        date_input.datepicker({dateFormat:'yy-mm-dd', inline:true});
+        date_input.val(formatted_date);
+        updateDates();
+    });
+</script>
+{% endblock %}
+
+{% block content %}
+<a class="button" href="/">Home</a> >
+<a class="button" href="{% url update-uids role.get_questionnaire.id %}">Update UIDs status</a> >
+<a class="button" href="{% url update-completed role.get_questionnaire.id %}">Update completed UIDs</a>
+<p>
+    Date: <input type="text" name="completion_date" id="formsetDate"/>
+</p>
+<form id="formsetForm" method="post" action="">
+    <table widht="100%">
+        <tbody>
+            <tr>
+                {% for field in formset.empty_form.visible_fields %}
+                <td>{{ field.label }}</td>
+                {% endfor %}
+            </tr>
+            {% for form in formset.forms %}
+            <tr>
+                {% for field in form.hidden_fields %}
+                <td class="hidden">{{ field }}</td>
+                {% endfor %}
+                {% for field in form.visible_fields %}
+                <td>{{ field }}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {{ formset.management_form }}
+</form>
+{% endblock %}
+
