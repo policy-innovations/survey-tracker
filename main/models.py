@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 
 from mptt.models import MPTTModel
 from mptt.fields import TreeForeignKey
+from tags.models import Tag
 
 class QuerySetManager(models.Manager):
 
@@ -110,6 +111,7 @@ class Questionnaire(models.Model):
                                      related_name='questionnaire')
     # Tree heads of errors which can occur in the questionnaire
     error_types = models.ManyToManyField(ErrorType, blank=True, null=True)
+    tags = models.ManyToManyField(Tag, blank=True)
 
     def __unicode__(self):
         return self.name.title()

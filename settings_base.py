@@ -131,6 +131,7 @@ INSTALLED_APPS = (
     'south',
     'mptt',
     'accounts',
+    'tags',
 )
 
 AUTHENTICATION_BACKENDS = (

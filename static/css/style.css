@@ -114,13 +114,13 @@ fieldset{
 }
 
 .add-row, .delete-row{
-    background:url('../admin/img/admin/icon_addlink.gif') no-repeat right;
+    background:url('../admin/img/icon_addlink.gif') no-repeat right;
     padding:0 15px 0 0;
     text-transform: capitalize;
 }
 
 .delete-row{
-    background:url('../admin/img/admin/icon_deletelink.gif') no-repeat right;
+    background:url('../admin/img/icon_deletelink.gif') no-repeat right;
     margin-left: 10px;
 }
 

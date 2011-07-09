@@ -15,10 +15,12 @@
     {% for surveyor in surveyors %}
     <tr>
         <td>{{ surveyor.name }}</td>
-        <td><a class="button" href="{% url update-completed role.get_questionnaire.id %}">Add</a></td>
+        <td><a class="button" href="{% url add-completed-entry role.get_questionnaire.id surveyor.id %}">Add</a></td>
         <td><a class="button" href="{% url add-uncompleted-entry role.get_questionnaire.id surveyor.id %}">Add</a></td>
         <td>{{ surveyor.uids.pending.count }}</td>
     </tr>
     {% endfor %}
 </table>
+
+<a class="button" href="{% url update-completed role.get_questionnaire.id %}">General Add</a>
 {% endblock %}
