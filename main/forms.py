@@ -95,6 +95,8 @@ class UIDCompleteForm(forms.ModelForm):
                                               **kwargs)
 
         self.fields['uid'].queryset = self.uids_set
+        self.fields['completer'].queryset = role.get_leafnodes(include_self=True)
+        self.fields['completer'].required = True
         for question in questionnaire.question_set.all():
             self.fields[question.field_name] = forms.ModelChoiceField(label=_(question.name),
                                                                       queryset=question.get_choices(),
@@ -116,7 +118,6 @@ class UIDCompleteForm(forms.ModelForm):
         exclude = ('questions', 'questionnaire', 'role', 'extra_details',
                    'errors',)
         widgets = {
-            #'date': forms.HiddenInput(),
         }
 
     class Media:

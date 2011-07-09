@@ -2,9 +2,7 @@
 {% load adminmedia %}
 {% block head %}
 <script type="text/javascript">
-{% for js in formset.media.raw_js %}
-head.js('{{ js }}');
-{% endfor %}
+    head.js('/static/js/jquery.formset.min.js');
 
 // Updates the dates in formset forms
 function updateDates(){
@@ -69,19 +67,15 @@ head.ready(function(){
                 <td class="hidden">{{ field }}</td>
                 {% endfor %}
                 {% for field in form.visible_fields %}
-                <td>{{ field }}</td>
+                <td>{% if field.errors %}{{ field.errors }}{% endif %}{{ field }}</td>
                 {% endfor %}
             </tr>
             {% endfor %}
         </tbody>
     </table>
     {{ formset.management_form }}
+    <br/>
+    {% csrf_token %}
+    <input type="submit" value="Post"/>
 </form>
-<!--
-   -<p>
-   -    {% for media in formset.media.raw %}
-   -    {{ media }}
-   -    {% endfor %}
-   -</p>
-   -->
 {% endblock %}

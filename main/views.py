@@ -44,7 +44,14 @@ def update_completed(request, proj_pk):
 
     UIDCompleteFormset = formset_factory(UIDCompleteForm, extra=1)
     UIDCompleteFormset.form = staticmethod(curry(UIDCompleteForm, role))
-    formset = UIDCompleteFormset()
+
+    if request.method == 'POST':
+        formset = UIDCompleteFormset(request.POST)
+        if formset.is_valid():
+            return redirect('update-completed',
+                            kwargs={'projk':role.project.id })
+    else:
+        formset = UIDCompleteFormset()
 
     ctx = {
         'formset':formset,
