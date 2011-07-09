@@ -116,7 +116,7 @@ fieldset{
 .add-row, .delete-row{
     background:url('../admin/img/admin/icon_addlink.gif') no-repeat right;
     padding:0 15px 0 0;
-    text-transform: capitalize
+    text-transform: capitalize;
 }
 
 .delete-row{
@@ -125,11 +125,11 @@ fieldset{
 }
 
 #formsetForm{
-    width: 80%;
+    width: 95%;
 }
 
 #formsetForm table{
-    width: 70%;
+    width: 100%;
 }
 
 #submenu{

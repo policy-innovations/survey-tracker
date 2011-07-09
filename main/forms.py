@@ -123,8 +123,7 @@ class UIDCompleteForm(forms.ModelForm):
         css = {
             'all':['css/jquery-ui-1.8.13.custom.css']
         }
-        js = ['js/jquery.formset.min.js',
-              'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js']
+        js = ['js/jquery.formset.min.js',]
 
 class QuestionForm(forms.ModelForm):
     '''

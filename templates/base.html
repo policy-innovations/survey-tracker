@@ -10,15 +10,17 @@
         <link rel='stylesheet' href="{{ STATIC_URL }}css/style.css" type = "text/css"/>
         <!--<link href="http://fonts.googleapis.com/css?family=Amaranth:regular" rel="stylesheet" type="text/css" >-->
         <link  href="http://fonts.googleapis.com/css?family=Droid+Sans:regular,bold" rel="stylesheet" type="text/css" >
+        <link  href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/themes/ui-darkness/jquery-ui.css" rel="stylesheet" type="text/css" >
         <link rel="shortcut icon" href="{{ STATIC_URL }}img/favicon.ico" />
         <script type="text/javascript" src="{{ STATIC_URL }}js/head.min.js"></script>
-        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
-
         <!--
-           -<script type="text/javascript">
-           -    head.js({main:"{{ STATIC_URL }}js/main.js"}, {jquery: "http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"});
-           -</script>
+           -<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
+           -<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js"></script>
            -->
+        <script type="text/javascript">
+            head.js("http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js")
+                .js("https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js");
+        </script>
         {% block head %}{% endblock %}
         </head>
         <body>

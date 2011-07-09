@@ -1,42 +1,50 @@
 {% extends 'base.html' %}
 {% load adminmedia %}
 {% block head %}
-{{ formset.media }}
 <script type="text/javascript">
-    // Updates the dates in formset forms
-    function updateDates(){
-        date_input = $("#formsetDate");
-        date_fields = $('[id$="-date"]');
-        date_fields.datepicker({dateFormat:'yy-mm-dd', inline:true});
-        date_empty_fields = $('[id$="-date"]');
+{% for js in formset.media.raw_js %}
+head.js('{{ js }}');
+{% endfor %}
 
-        // For each form date field add the global date value if none is
-        // already present
-        date_fields.each(function(index){
-            if (!this.value){
-                this.value = date_input.val();
-            };
-        });
-    };
+// Updates the dates in formset forms
+function updateDates(){
+    date_input_val = $("#formsetDate").val();
+    date_fields = $('[id$="-date"]');
+    date_fields.datepicker({dateFormat:'yy-mm-dd', inline:true});
+    date_empty_fields = $('[id$="-date"]');
+
+    // For each form date field add the global date value if none is
+    // already present
+    date_fields.each(function(index){
+        if (!this.value){
+            this.value = date_input_val;
+        };
+    });
+};
+
+head.ready(function(){
+    $.datepicker.setDefaults({dateFormat:'yy-mm-dd'});
 
     $(function() {
         $('#formsetForm tbody tr').formset({'added':updateDates});
     });
 
     $(function() {
+
+        // Generating the current date
         var now = new Date();
 
-        var curr_date = now.getDate();
-        var curr_month = now.getMonth();
-        var curr_year = now.getFullYear();
+        // Create the global datepicker
+        $('#formsetDate').datepicker({
+            onSelect: updateDates
+        });
+        // Set global datepicker value to now
+        $('#formsetDate').datepicker("setDate", now);
 
-        var formatted_date = curr_year + "-" + curr_month + "-" + curr_date
-
-        date_input = $('#formsetDate')
-        date_input.datepicker({dateFormat:'yy-mm-dd', inline:true});
-        date_input.val(formatted_date);
+        // Update all empty dates to pick value from global datepicker
         updateDates();
     });
+});
 </script>
 {% endblock %}
 
@@ -69,5 +77,11 @@
     </table>
     {{ formset.management_form }}
 </form>
+<!--
+   -<p>
+   -    {% for media in formset.media.raw %}
+   -    {{ media }}
+   -    {% endfor %}
+   -</p>
+   -->
 {% endblock %}
-
