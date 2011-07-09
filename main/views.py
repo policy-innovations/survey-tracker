@@ -1,5 +1,6 @@
 import math
 import xlrd
+import datetime
 
 from django.http import HttpResponse,HttpResponseRedirect, Http404
 from django.db import IntegrityError
@@ -36,22 +37,39 @@ def update_uids(request, proj_pk):
 
 @login_required
 def update_completed(request, proj_pk):
+    EXTRA = 0
+
     questionnaire = Questionnaire.objects.get(pk=proj_pk)
     try:
         role = questionnaire.get_descendants().get(user=request.user)
     except Role.DoesNotExist:
         raise Http404
 
-    UIDCompleteFormset = formset_factory(UIDCompleteForm, extra=1)
+
+    uid_list = []
+    for sub in role.get_leafnodes(include_self=True):
+        uid_list.extend(sub.uids().filter(completer__isnull=True) \
+            .values_list('id', flat=True))
+
+    uids = UIDStatus.objects.filter(id__in=uid_list).values_list('uid', flat=True)
+
+    mapper = lambda x: {'date':datetime.date.today(), 'uid':x}
+
+    initial = map(mapper, uids)
+
+    UIDCompleteFormset = formset_factory(UIDCompleteForm, extra=EXTRA)
     UIDCompleteFormset.form = staticmethod(curry(UIDCompleteForm, role))
 
     if request.method == 'POST':
-        formset = UIDCompleteFormset(request.POST)
+        formset = UIDCompleteFormset(request.POST, initial=initial)
         if formset.is_valid():
+            for form in formset:
+                form.save()
             return redirect('update-completed',
-                            kwargs={'projk':role.project.id })
+                            proj_pk=role.get_questionnaire().id)
     else:
-        formset = UIDCompleteFormset()
+
+        formset = UIDCompleteFormset(initial=initial)
 
     ctx = {
         'formset':formset,

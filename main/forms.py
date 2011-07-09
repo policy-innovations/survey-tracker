@@ -82,33 +82,45 @@ class ErrorForm(forms.ModelForm):
 
 class UIDCompleteForm(forms.ModelForm):
 
-    def __init__(self, role, data={}, initial = {}, instance=None, *args, **kwargs):
+    def __init__(self, role, *args, **kwargs):
         self.role = role
         questionnaire = role.get_questionnaire()
         self.uids_set = UIDStatus.objects.filter(questionnaire=questionnaire)
+        self.uid_complete = True
 
-        if data.get('uid', False):
-            instance = self.uids_set.get(uid=data['uid'])
-
-        super(UIDCompleteForm, self).__init__(data=data, initial=initial,
-                                              instance=instance, *args,
-                                              **kwargs)
+        super(UIDCompleteForm, self).__init__(*args, **kwargs)
 
         self.fields['uid'].queryset = self.uids_set
         self.fields['completer'].queryset = role.get_leafnodes(include_self=True)
-        self.fields['completer'].required = True
+
         for question in questionnaire.question_set.all():
-            self.fields[question.field_name] = forms.ModelChoiceField(label=_(question.name),
-                                                                      queryset=question.get_choices(),
-                                                                      initial=data.get(question.field_name))
+            self.fields[question.field_name] = forms.ModelChoiceField(
+                        label=_(question.name),
+                        queryset=question.get_choices())
+
+        if not self.data.get(self.add_prefix('completer')):
+            self.uid_complete = False
+            for field_name in self.fields:
+                self.fields.get(field_name).required = False
+
+    def clean(self, *args, **kwargs):
+
+        uid_id = self.cleaned_data.get('uid', None)
+        self.instance = self.uids_set.get(uid=uid_id)
+
+        if not self.uid_complete:
+            self.cleaned_data['date'] = None
+
+        return super(UIDCompleteForm, self).clean(*args, **kwargs)
+
 
     def save(self):
         uid = super(UIDCompleteForm, self).save()
-
-        for question in self.role.get_questionnaire().question_set.all():
-            choice = self.cleaned_data[question.field_name]
-            #choice = question.choice_set.filter(id=choice_id)
-            UIDQuestion.objects.create(uid_status=uid, question=question,
+        if self.uid_complete:
+            for question in self.role.get_questionnaire().question_set.all():
+                choice = self.cleaned_data[question.field_name]
+                #choice = question.choice_set.filter(id=choice_id)
+                UIDQuestion.objects.create(uid_status=uid, question=question,
                                                selected_choice=choice)
 
         return uid
@@ -116,7 +128,7 @@ class UIDCompleteForm(forms.ModelForm):
     class Meta:
         model = UIDStatus
         exclude = ('questions', 'questionnaire', 'role', 'extra_details',
-                   'errors',)
+                   'errors')
         widgets = {
         }
 

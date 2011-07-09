@@ -5,6 +5,11 @@
 <a class="button" href="{% url update-uids role.get_questionnaire.id %}">Update UIDs status</a>
 
 <h3>Update subordinates UIDs status:</h3>
+
+<p>
+<a class="button" href="{% url update-completed role.get_questionnaire.id %}">Add Completed (General)</a>
+</p>
+
 <table class="styled">
     <tr>
         <th>Surveyor</th>
@@ -21,6 +26,4 @@
     </tr>
     {% endfor %}
 </table>
-
-<a class="button" href="{% url update-completed role.get_questionnaire.id %}">General Add</a>
 {% endblock %}

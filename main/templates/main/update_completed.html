@@ -6,6 +6,7 @@
 
 // Updates the dates in formset forms
 function updateDates(){
+    return;
     date_input_val = $("#formsetDate").val();
     date_fields = $('[id$="-date"]');
     date_fields.datepicker({dateFormat:'yy-mm-dd', inline:true});
@@ -23,24 +24,21 @@ function updateDates(){
 head.ready(function(){
     $.datepicker.setDefaults({dateFormat:'yy-mm-dd'});
 
-    $(function() {
-        $('#formsetForm tbody tr').formset({'added':updateDates});
-    });
+    //$(function() {
+    //    $('#formsetForm tbody tr').formset({'added':updateDates});
+    //});
 
     $(function() {
-
-        // Generating the current date
-        var now = new Date();
 
         // Create the global datepicker
-        $('#formsetDate').datepicker({
+        $('[id$="-date"]').datepicker({
             onSelect: updateDates
         });
         // Set global datepicker value to now
-        $('#formsetDate').datepicker("setDate", now);
+        //$('#formsetDate').datepicker("setDate", now);
 
         // Update all empty dates to pick value from global datepicker
-        updateDates();
+        //updateDates();
     });
 });
 </script>
@@ -50,9 +48,11 @@ head.ready(function(){
 <a class="button" href="/">Home</a> >
 <a class="button" href="{% url update-uids role.get_questionnaire.id %}">Update UIDs status</a> >
 <a class="button" href="{% url update-completed role.get_questionnaire.id %}">Update completed UIDs</a>
-<p>
-    Date: <input type="text" name="completion_date" id="formsetDate"/>
-</p>
+<!--
+   -<p>
+   -    Date: <input type="text" name="completion_date" id="formsetDate"/>
+   -</p>
+   -->
 <form id="formsetForm" method="post" action="">
     <table widht="100%">
         <tbody>
