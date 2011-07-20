@@ -9,7 +9,7 @@ class Migration(SchemaMigration):
     def forwards(self, orm):
         
         # Adding field 'Question.questionnaire'
-        db.add_column('main_question', 'questionnaire', self.gf('django.db.models.fields.related.ForeignKey')(default='', to=orm['main.Questionnaire']), keep_default=False)
+        db.add_column('main_question', 'questionnaire', self.gf('django.db.models.fields.related.ForeignKey')(default=1, to=orm['main.Questionnaire']), keep_default=False)
 
         # Removing M2M table for field questions on 'Questionnaire'
         db.delete_table('main_questionnaire_questions')
