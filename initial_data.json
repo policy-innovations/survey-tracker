@@ -81,33 +81,6 @@
     }
   },
   {
-    "pk": 10,
-    "model": "auth.permission",
-    "fields": {
-      "codename": "add_message",
-      "name": "Can add message",
-      "content_type": 4
-    }
-  },
-  {
-    "pk": 11,
-    "model": "auth.permission",
-    "fields": {
-      "codename": "change_message",
-      "name": "Can change message",
-      "content_type": 4
-    }
-  },
-  {
-    "pk": 12,
-    "model": "auth.permission",
-    "fields": {
-      "codename": "delete_message",
-      "name": "Can delete message",
-      "content_type": 4
-    }
-  },
-  {
     "pk": 1,
     "model": "auth.permission",
     "fields": {
@@ -483,6 +456,33 @@
       "codename": "delete_migrationhistory",
       "name": "Can delete migration history",
       "content_type": 9
+    }
+  },
+  {
+    "pk": 61,
+    "model": "auth.permission",
+    "fields": {
+      "codename": "add_tag",
+      "name": "Can add tag",
+      "content_type": 21
+    }
+  },
+  {
+    "pk": 62,
+    "model": "auth.permission",
+    "fields": {
+      "codename": "change_tag",
+      "name": "Can change tag",
+      "content_type": 21
+    }
+  },
+  {
+    "pk": 63,
+    "model": "auth.permission",
+    "fields": {
+      "codename": "delete_tag",
+      "name": "Can delete tag",
+      "content_type": 21
     }
   },
   {
